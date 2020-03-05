@@ -59,14 +59,13 @@ func (r *Runner) Do(startpoint mirror.Atom) {
 			}
 			switch cmd.Operator {
 			// 单目运算
-			case "null":
+			case "free":
 				y, x := r.real(r.y, r.x+1)
 				r.memoryspace.Space[y][x] = nil
 				r.y++
 			case "=":
-				y, x := r.real(r.y, r.x+1)
+				y, x := r.real(r.y, r.x-1)
 				r.memoryspace.Space[y][x] = &r.result
-				x = x - 2
 				y++
 			case "!":
 				y, x := r.real(r.y, r.x+1)
@@ -97,7 +96,6 @@ func (r *Runner) Do(startpoint mirror.Atom) {
 					result = r.memoryspace.Space[left_y][left_x].V_int / r.memoryspace.Space[right_y][right_x].V_int
 				}
 				r.result = mirror.Atom{Type: "int", V_int: result}
-				r.x += 2
 			case "==":
 				left := r.memoryspace.Space[r.y][r.x-1]
 				var leftv *mirror.Atom
