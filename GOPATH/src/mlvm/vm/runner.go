@@ -2,18 +2,23 @@ package vm
 
 import (
 	"mirror"
+	"time"
 )
 
 type Runner struct {
-	status string
-	x, y   int
-	pause  chan int
+	status       string
+	x, y         int
+	result       mirror.Atom
+	pause        chan int
+	Computecycle time.Duration
+	memoryspace  *Memoryspace
 }
 
-func NewRunner() *Runner {
+func NewRunner(m *Memoryspace) *Runner {
 	return &Runner{
-		status: "ready",
-		pause:  make(chan int),
+		status:      "ready",
+		pause:       make(chan int),
+		memoryspace: m,
 	}
 }
 func (r *Runner) Pause() {
@@ -23,62 +28,109 @@ func (r *Runner) Goon() {
 	<-r.pause
 	r.status = "run"
 }
-func (r *Runner) Do(memoryspace *Memoryspace, startpoint mirror.Atom) {
+func (r *Runner) real(y, x int) (int, int) {
+	a := r.memoryspace.Space[y][x]
+	if a != nil {
+		if a.Type == "point" {
+			return a.Point_y, a.Point_x
+		} else {
+			return y, x
+		}
+	}
+	return y, x
+}
+
+func (r *Runner) Do(startpoint mirror.Atom) {
 	r.x, r.y = r.x, r.y
 	for {
+		if r.Computecycle > 0 {
+			time.Sleep(r.Computecycle)
+		}
 		switch r.status {
 		case "exit":
 			return
 		case "pause":
 			r.pause <- 0
 		}
-		cmd := memoryspace.Space[r.y][r.x]
-		if cmd == nil {
-			r.x, r.y = 0, 0
-			continue
-		}
-		switch cmd.Operator {
-		case "null":
-			right := memoryspace.Space[r.y][r.x+1]
-			if right != nil {
-				if right.Type == "point" {
-					memoryspace.Space[right.Point_y][right.Point_x] = nil
-					break
+		if r.y < len(r.memoryspace.Space) {
+			cmd := r.memoryspace.Space[r.y][r.x]
+			if cmd == nil {
+				continue
+			}
+			switch cmd.Operator {
+			// 单目运算
+			case "null":
+				y, x := r.real(r.y, r.x+1)
+				r.memoryspace.Space[y][x] = nil
+				r.y++
+			case "=":
+				y, x := r.real(r.y, r.x+1)
+				r.memoryspace.Space[y][x] = &r.result
+				x = x - 2
+				y++
+			case "!":
+				y, x := r.real(r.y, r.x+1)
+				r.memoryspace.Space[y][x].V_bool = !r.memoryspace.Space[y][x].V_bool
+				r.y++
+				//双运算
+
+			case "+":
+				fallthrough
+			case "-":
+				fallthrough
+			case "*":
+				fallthrough
+			case "/":
+				right_y, right_x := r.real(r.y, r.x+1)
+				left_y, left_x := r.real(r.y, r.x-1)
+				result := 0
+				if cmd.Operator == "+" {
+					result = r.memoryspace.Space[left_y][left_x].V_int - r.memoryspace.Space[right_y][right_x].V_int
 				}
-				memoryspace.Space[r.y][r.x+1] = nil
+				if cmd.Operator == "-" {
+					result = r.memoryspace.Space[left_y][left_x].V_int - r.memoryspace.Space[right_y][right_x].V_int
+				}
+				if cmd.Operator == "*" {
+					result = r.memoryspace.Space[left_y][left_x].V_int * r.memoryspace.Space[right_y][right_x].V_int
+				}
+				if cmd.Operator == "/" {
+					result = r.memoryspace.Space[left_y][left_x].V_int / r.memoryspace.Space[right_y][right_x].V_int
+				}
+				r.result = mirror.Atom{Type: "int", V_int: result}
+				r.x += 2
+			case "==":
+				left := r.memoryspace.Space[r.y][r.x-1]
+				var leftv *mirror.Atom
+				switch left.Type {
+				case "point":
+					leftv = r.memoryspace.Space[left.Point_y][left.Point_x]
+				default:
+					leftv = left
+				}
+				right := r.memoryspace.Space[r.y][r.x+1]
+				var rightv *mirror.Atom
+				switch right.Type {
+				case "point":
+					rightv = r.memoryspace.Space[right.Point_y][right.Point_x]
+				default:
+					rightv = right
+				}
+				if leftv.Type == rightv.Type {
+					switch left.Type {
+					case "bool":
+					}
+				}
+				r.y++
+			case "go":
+				right := r.memoryspace.Space[r.y][r.x+1]
+				r.y += right.Point_y
+				r.x += right.Point_x
+			case "goto":
+				right := r.memoryspace.Space[r.y][r.x+1]
+				r.y, r.x = right.Point_y, right.Point_x
 			}
 
-		case "!":
-			right := memoryspace.Space[r.y][r.x+1]
-			switch right.Type {
-			case "point":
-				memoryspace.Space[right.Point_y][right.Point_x].V_bool = !memoryspace.Space[right.Point_y][right.Point_x].V_bool
-			default:
-				memoryspace.Space[r.y][r.x+1].V_bool = !memoryspace.Space[r.y][r.x+1].V_bool
-			}
-		case "==":
-			left := memoryspace.Space[r.y][r.x-1]
-			var leftv *mirror.Atom
-			switch left.Type {
-			case "point":
-				leftv = memoryspace.Space[left.Point_y][left.Point_x]
-			default:
-				leftv = left
-			}
-			right := memoryspace.Space[r.y][r.x+1]
-			var rightv *mirror.Atom
-			switch right.Type {
-			case "point":
-				rightv = memoryspace.Space[right.Point_y][right.Point_x]
-			default:
-				rightv = right
-			}
-			if leftv.Type == rightv.Type {
-				switch left.Type {
-				case "bool":
-				}
-			}
 		}
-		r.y++
+
 	}
 }
