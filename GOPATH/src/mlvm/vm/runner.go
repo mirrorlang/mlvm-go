@@ -6,12 +6,14 @@ import (
 
 type Runner struct {
 	status string
+	x, y   int
 	pause  chan int
 }
 
 func NewRunner() *Runner {
 	return &Runner{
 		status: "ready",
+		pause:  make(chan int),
 	}
 }
 func (r *Runner) Pause() {
@@ -19,8 +21,10 @@ func (r *Runner) Pause() {
 }
 func (r *Runner) Goon() {
 	<-r.pause
+	r.status = "run"
 }
 func (r *Runner) Do(memoryspace *Memoryspace, startpoint mirror.Atom) {
+	r.x, r.y = r.x, r.y
 	for {
 		switch r.status {
 		case "exit":
@@ -28,39 +32,44 @@ func (r *Runner) Do(memoryspace *Memoryspace, startpoint mirror.Atom) {
 		case "pause":
 			r.pause <- 0
 		}
-		cmd := memoryspace.Space[startpoint.Point_x][startpoint.Point_y]
+		cmd := memoryspace.Space[r.y][r.x]
+		if cmd == nil {
+			r.x, r.y = 0, 0
+			continue
+		}
 		switch cmd.Operator {
 		case "null":
-			right := memoryspace.Space[startpoint.Point_x+1][startpoint.Point_y]
-			switch right.Type {
-			case "point":
-				memoryspace.Space[right.Point_x][right.Point_y] = mirror.Atom{Type: "null"}
-			default:
-				memoryspace.Space[startpoint.Point_x+1][startpoint.Point_y] = mirror.Atom{Type: "null"}
+			right := memoryspace.Space[r.y][r.x+1]
+			if right != nil {
+				if right.Type == "point" {
+					memoryspace.Space[right.Point_y][right.Point_x] = nil
+					break
+				}
+				memoryspace.Space[r.y][r.x+1] = nil
 			}
 
 		case "!":
-			right := memoryspace.Space[startpoint.Point_x+1][startpoint.Point_y]
+			right := memoryspace.Space[r.y][r.x+1]
 			switch right.Type {
 			case "point":
-				memoryspace.Space[right.Point_x][right.Point_y].V_bool = !memoryspace.Space[right.Point_x][right.Point_y].V_bool
+				memoryspace.Space[right.Point_y][right.Point_x].V_bool = !memoryspace.Space[right.Point_y][right.Point_x].V_bool
 			default:
-				memoryspace.Space[startpoint.Point_x+1][startpoint.Point_y].V_bool = !memoryspace.Space[startpoint.Point_x+1][startpoint.Point_y].V_bool
+				memoryspace.Space[r.y][r.x+1].V_bool = !memoryspace.Space[r.y][r.x+1].V_bool
 			}
 		case "==":
-			left := memoryspace.Space[startpoint.Point_x-1][startpoint.Point_y]
-			var leftv mirror.Atom
+			left := memoryspace.Space[r.y][r.x-1]
+			var leftv *mirror.Atom
 			switch left.Type {
 			case "point":
-				leftv = memoryspace.Space[left.Point_x][left.Point_y]
+				leftv = memoryspace.Space[left.Point_y][left.Point_x]
 			default:
 				leftv = left
 			}
-			right := memoryspace.Space[startpoint.Point_x+1][startpoint.Point_y]
-			var rightv mirror.Atom
+			right := memoryspace.Space[r.y][r.x+1]
+			var rightv *mirror.Atom
 			switch right.Type {
 			case "point":
-				rightv = memoryspace.Space[right.Point_x][right.Point_y]
+				rightv = memoryspace.Space[right.Point_y][right.Point_x]
 			default:
 				rightv = right
 			}
@@ -70,5 +79,6 @@ func (r *Runner) Do(memoryspace *Memoryspace, startpoint mirror.Atom) {
 				}
 			}
 		}
+		r.y++
 	}
 }
