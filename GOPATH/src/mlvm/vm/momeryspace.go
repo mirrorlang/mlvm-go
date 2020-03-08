@@ -2,13 +2,15 @@ package vm
 
 import (
 	"fmt"
+	"github.com/gosdk/log"
+
 	"mirror"
 	"strconv"
 )
 
 type Memoryspace struct {
-	n     int
 	Space [][]*mirror.Atom
+	n     int
 }
 
 func NewMemory() (m *Memoryspace) {
@@ -17,6 +19,7 @@ func NewMemory() (m *Memoryspace) {
 	m.Resize(m.n)
 	return m
 }
+
 func (m *Memoryspace) Resize(N int) {
 	m.n = N
 	leng := (2 << m.n)
@@ -34,37 +37,40 @@ func (m *Memoryspace) Resize(N int) {
 
 }
 
-const Width = 10
+const Width = 16
 
 func (m *Memoryspace) Print() {
-	fmt.Print("mem:")
+	fmt.Print("mem:    ")
 	for j := 0; j < len(m.Space[0]); j++ {
 		fmt.Printf("|x=%-"+strconv.Itoa(Width-2)+"d", j)
 	}
 	fmt.Println()
 	for i := 0; i < len(m.Space); i++ {
-		fmt.Print("|y=" + strconv.Itoa(i))
+		fmt.Printf("|y=%-5d", i)
 		for j := 0; j < len(m.Space[i]); j++ {
 			atom := m.Space[i][j]
 			if atom == nil {
 				fmt.Printf("|%"+strconv.Itoa(Width)+"s", "")
 				continue
 			}
+			var c log.Colortext
 			switch atom.Type {
-			case "":
-				fallthrough
-			case "string":
-				fmt.Printf("|%-"+strconv.Itoa(Width)+"s", atom.V_string)
-			case "bool":
-				fmt.Printf("|%-"+strconv.Itoa(Width)+"t", atom.V_bool)
-			case "op":
-				fmt.Printf("|%-"+strconv.Itoa(Width)+"s", atom.Operator)
 			case "int":
-				fmt.Printf("|%-"+strconv.Itoa(Width)+"d", atom.V_int)
+				c = log.Cyan
+			case "bool":
+				c = log.LightBlue
+			case "rect":
+				c = log.Blue
 			case "point":
-				fmt.Printf("|pr(%-"+strconv.Itoa((Width-4)/2)+"d%-"+strconv.Itoa((Width-4)/2)+"d)", atom.Point_x, atom.Point_y)
+				c = log.Gray
+			case "func":
+				c = log.Yellow
+			case "op":
+				c = log.Red
 			}
+			log.Print(c, fmt.Sprintf("|%-"+strconv.Itoa(Width)+"s", atom.String()))
 		}
 		fmt.Println("|")
 	}
+	fmt.Println()
 }

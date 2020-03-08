@@ -26,7 +26,24 @@ func test_0() {
 
 }
 
+func test_1() {
+	go func() {
+		cpu0.Pause()
+	}()
+	time.Sleep(time.Second)
+	vm.TestCallfunc(mem)
+	mem.Print()
+
+	cpu0.Goon()
+	time.Sleep(time.Second * 2)
+	mem.Print()
+
+	fmt.Scanln()
+
+}
+
 func main() {
 	go cpu0.Do(mirror.Atom{Point_x: 0, Point_y: 0})
-	test_0()
+	//test_0()
+	test_1()
 }
