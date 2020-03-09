@@ -13,9 +13,19 @@ type Memoryspace struct {
 	n     int
 }
 
+func (m *Memoryspace) Rect(point_x, point_y int, offset_x, offset_y int) (r [][]*mirror.Atom) {
+	r = make([][]*mirror.Atom, offset_y)
+	for i := 0; i < offset_y; i++ {
+		r[i] = make([]*mirror.Atom, offset_x)
+		for j := 0; j < offset_x; j++ {
+			r[i][j] = m.Space[point_y+i][point_x+j]
+		}
+	}
+	return
+}
 func NewMemory() (m *Memoryspace) {
 	m = new(Memoryspace)
-	m.n = 3
+	m.n = 4
 	m.Resize(m.n)
 	return m
 }
@@ -34,23 +44,22 @@ func (m *Memoryspace) Resize(N int) {
 			m.Space[i] = make([]*mirror.Atom, leng)
 		}
 	}
-
 }
 
-const Width = 16
+const PrintWidth = 16
 
 func (m *Memoryspace) Print() {
 	fmt.Print("mem:    ")
 	for j := 0; j < len(m.Space[0]); j++ {
-		fmt.Printf("|x=%-"+strconv.Itoa(Width-2)+"d", j)
+		fmt.Printf("|X=%-"+strconv.Itoa(PrintWidth-2)+"d", j)
 	}
 	fmt.Println()
 	for i := 0; i < len(m.Space); i++ {
-		fmt.Printf("|y=%-5d", i)
+		fmt.Printf("|Y=%-5d", i)
 		for j := 0; j < len(m.Space[i]); j++ {
 			atom := m.Space[i][j]
 			if atom == nil {
-				fmt.Printf("|%"+strconv.Itoa(Width)+"s", "")
+				fmt.Printf("|%"+strconv.Itoa(PrintWidth)+"s", "")
 				continue
 			}
 			var c log.Colortext
@@ -68,7 +77,7 @@ func (m *Memoryspace) Print() {
 			case "op":
 				c = log.Red
 			}
-			log.Print(c, fmt.Sprintf("|%-"+strconv.Itoa(Width)+"s", atom.String()))
+			log.Print(c, fmt.Sprintf("|%-"+strconv.Itoa(PrintWidth)+"s", atom.String()))
 		}
 		fmt.Println("|")
 	}

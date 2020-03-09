@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <script src="https://cdn.bootcss.com/fabric.js/4.0.0-beta.5/fabric.js"></script>
+    <meta charset="UTF-8">
+    <title>mem</title>
+    <script src="atom.js"></script>
+    <script type="text/javascript">
+ 
+        function load() {
+            memborder(new fabric.Canvas('background'))
+            var xmlhttp =new XMLHttpRequest();
+            xmlhttp.onreadystatechange=function()
+            {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    let status = JSON.parse(xmlhttp.responseText);
+                    draw(status.Mem,status.Cpu);
+                }
+            }
+            xmlhttp.open("GET","/mem",true);
+            xmlhttp.send();
+        }
+        function connect() {
+            var  wsServer = 'ws://localhost:8888/Demo';
+            var  websocket = new WebSocket(wsServer);
+            websocket.onopen = function (evt) { onOpen(evt) };
+            websocket.onclose = function (evt) { onClose(evt) };
+            websocket.onmessage = function (evt) { onMessage(evt) };
+            websocket.onerror = function (evt) { onError(evt) };
+            function onOpen(evt) {
+                console.log("Connected to WebSocket server.");
+            }
+            function onClose(evt) {
+                console.log("Disconnected");
+            }
+            function onMessage(evt) {
+                console.log('Retrieved data from server: ' + evt.data);
+            }
+            function onError(evt) {
+                console.log('Error occured: ' + evt.data);
+            }
+        }
+    </script>
+</head>
+<body onload="load()">
+    
+    <canvas id="background" width="1600" height="1600"></canvas>
+    <canvas id="mem" width="1600" height="1600"></canvas>
+    <style>
+        body {
+          position: relative;
+        }
+        canvas { position: absolute; }
+        #mem { z-index: 2 }
+        #background { z-index: 1 }
+      </style>
+</body>
+</html>

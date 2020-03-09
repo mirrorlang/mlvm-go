@@ -26,6 +26,9 @@ func (a *Atom) Clone() Atom {
 	return *a
 }
 func (a *Atom) Value() interface{} {
+	if a == nil {
+		return nil
+	}
 	switch a.Type {
 	case "null":
 		return nil
@@ -42,14 +45,14 @@ func (a *Atom) Value() interface{} {
 	case "rect":
 		return [][]int{[]int{a.Point_x, a.Point_y}, []int{a.Size_x, a.Size_y}}
 	default:
-		return nil
+		return "unknow"
 	}
 }
 func (a *Atom) String() string {
 	switch a.Type {
 	case "point":
 		if a.Point_x == 0 && a.Point_y == 0 {
-			s := "[" + " "
+			s := "(" + " "
 			if a.Offset_x >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_x)
 			} else {
@@ -62,10 +65,10 @@ func (a *Atom) String() string {
 			} else {
 				s += strconv.Itoa(a.Offset_y)
 			}
-			s += "]"
+			s += ")"
 			return s
 		} else {
-			s := "[" + strconv.Itoa(a.Point_x)
+			s := "(" + strconv.Itoa(a.Point_x)
 			if a.Offset_x >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_x)
 			} else {
@@ -78,9 +81,37 @@ func (a *Atom) String() string {
 			} else {
 				s += strconv.Itoa(a.Offset_y)
 			}
-			s += "]"
+			s += ")"
 			return s
 		}
+
+	case "rectdata":
+		s := "("
+		if a.Offset_x >= 0 {
+			s += "+" + strconv.Itoa(a.Offset_x)
+		} else {
+			s += strconv.Itoa(a.Offset_x)
+		}
+		s += ","
+		if a.Offset_y >= 0 {
+			s += "+" + strconv.Itoa(a.Offset_y)
+		} else {
+			s += strconv.Itoa(a.Offset_y)
+		}
+		s += ").("
+		if a.Rectoffset_x >= 0 {
+			s += "+" + strconv.Itoa(a.Rectoffset_x)
+		} else {
+			s += strconv.Itoa(a.Rectoffset_x)
+		}
+		s += ","
+		if a.Rectoffset_y >= 0 {
+			s += "+" + strconv.Itoa(a.Rectoffset_y)
+		} else {
+			s += strconv.Itoa(a.Rectoffset_y)
+		}
+		s += ")"
+		return s
 
 	case "rect":
 		s := "["

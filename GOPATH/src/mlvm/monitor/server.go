@@ -1,34 +1,49 @@
 package monitor
 
 import (
-	"encoding/json"
+	"io/ioutil"
 	"mlvm/vm"
 	"net/http"
+	"os"
 	"strconv"
 )
 
 var Port int = 8000
 
+//func upper(ws *websocket.Conn) {
+//	var err error
+//	for {
+//		var reply string
+//
+//		if err = websocket.Message.Receive(ws, &reply); err != nil {
+//			fmt.Println(err)
+//			continue
+//		}
+//
+//		if err = websocket.Message.Send(ws, strings.ToUpper(reply)); err != nil {
+//			fmt.Println(err)
+//			continue
+//		}
+//	}
+//}
 func Run(runners []*vm.Runner, memory *vm.Memoryspace) {
-
-	http.HandleFunc("cpu", func(writer http.ResponseWriter, request *http.Request) {
-		bs, err := json.Marshal(runners)
-		if err != nil {
-			panic(err)
+	webpath := os.Args[1]
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		st, err := os.Stat((webpath + request.URL.Path))
+		if err == nil {
+			if st.IsDir() {
+				return
+			}
+			bs, err := ioutil.ReadFile(webpath + request.URL.Path)
+			if err != nil {
+				panic(err)
+			}
+			writer.Write(bs)
+			return
 		}
-		_, err = writer.Write(bs)
-		if err != nil {
-			panic(err)
-		}
-	})
-	http.HandleFunc("mem", func(writer http.ResponseWriter, request *http.Request) {
-		bs, err := json.Marshal(memory.Space)
-		if err != nil {
-			panic(err)
-		}
-		_, err = writer.Write(bs)
-		if err != nil {
-			panic(err)
+		switch request.URL.Path[1:] {
+		case "mem":
+			mem(runners, memory, writer, request)
 		}
 	})
 
