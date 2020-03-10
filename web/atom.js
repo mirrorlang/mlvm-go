@@ -140,10 +140,7 @@ function drawcpu(card,cpu){
     card.add(cpufuncrect);
 
 }
-function draw(mem,cpu){
-    let card = new fabric.Canvas('mem')
-    card.clear();
-   
+function draw(card,mem,cpu){
     drawcpu(card,cpu[0]);
     for (let i=0;i<mem.length;i++){
         for (let j=0;j<mem.length;j++){
@@ -152,7 +149,7 @@ function draw(mem,cpu){
     }
 }
 
-function memborder(size){
+function memborder(card,size){
     for (let i=0;i<=size;i++){
         let horizontal= new fabric.Line([ i*atomsize,0, i*atomsize,size*atomsize], {
             strokeWidth: 1, //线宽

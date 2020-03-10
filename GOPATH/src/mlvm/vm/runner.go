@@ -23,6 +23,16 @@ func NewRunner(m *Memoryspace) *Runner {
 		mem:    m,
 	}
 }
+func (c *Runner) Op() mirror.Atom {
+	return c.mem.At(c.X, c.Y)
+}
+func (c *Runner) Right() mirror.Atom {
+	return c.mem.At(c.X+1, c.Y)
+}
+func (c *Runner) Left() mirror.Atom {
+	return c.mem.At(c.X-1, c.Y)
+}
+
 func (c *Runner) Print() {
 	fmt.Printf("cpu %+v", c)
 	fmt.Println()
@@ -50,7 +60,7 @@ func (m *Runner) Address(atom mirror.Atom) mirror.Atom {
 	}
 }
 func (cpu *Runner) Do(startpoint mirror.Atom) {
-	cpu.X, cpu.Y = cpu.X, cpu.Y
+
 	for {
 		if cpu.Computecycle > 0 {
 			time.Sleep(cpu.Computecycle)
@@ -61,78 +71,60 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 		case "pause":
 			cpu.pause <- 0
 		}
-		if cpu.Y < len(cpu.mem.Space) {
-			cmd := cpu.mem.Space[cpu.Y][cpu.X].Clone()
+		if cpu.Y < cpu.mem.Y() {
+			cmd := cpu.Op()
 			if cmd.Type == "" {
 				continue
 			}
 			switch cmd.Operator {
 			// 单目运算
 			case "nil":
-				right := cpu.mem.Space[cpu.Y][cpu.X+1].Clone()
+				right := cpu.Right()
 				t := right.Type
 				switch t {
 				case "rect":
 					for i := right.Point_y; i < right.Size_y; i++ {
 						for j := right.Point_x; j < right.Size_x; j++ {
-							cpu.mem.Space[right.Point_y+right.Offset_y+i][right.Point_x+right.Offset_x+j] = nil
+							cpu.mem.Set(right.Point_x+right.Offset_x+j, right.Point_y+right.Offset_y+i, mirror.Atom{Type: "null"})
 						}
 					}
 				case "point":
 					right = cpu.Address(right)
-					cpu.mem.Space[right.Point_y+right.Offset_y][right.Point_x+right.Offset_x] = nil
+					cpu.mem.Set(right.Point_x+right.Offset_x, right.Point_y+right.Offset_y, mirror.Atom{Type: "null"})
 				default:
-					cpu.mem.Space[cpu.Y][cpu.X+1] = nil
-				}
-				cpu.Y++
-			case "empty":
-				right := cpu.mem.Space[cpu.Y][cpu.X+1].Clone()
-				t := right.Type
-				switch t {
-				case "rect":
-					for i := right.Point_y; i < right.Size_y; i++ {
-						for j := right.Point_x; j < right.Size_x; j++ {
-							cpu.mem.Space[right.Point_y+right.Offset_y+i][right.Point_x+right.Offset_x+j] = &mirror.Atom{Type: t}
-						}
-					}
-				case "point":
-					right = cpu.Address(right)
-					cpu.mem.Space[right.Point_y+right.Offset_y][right.Point_x+right.Offset_x] = &mirror.Atom{Type: cpu.mem.Space[right.Point_y][right.Point_x].Type}
-				default:
-					cpu.mem.Space[cpu.Y][cpu.X+1] = nil
+					cpu.mem.Set(cpu.X+1, cpu.Y, mirror.Atom{Type: "null"})
 				}
 				cpu.Y++
 			case "=":
-				left := cpu.mem.Space[cpu.Y][cpu.X-1].Clone()
+				left := cpu.Left()
+				v := cpu.result
 
-				v := cpu.result.Clone()
-				if left.Type == "" {
-					cpu.mem.Space[cpu.Y][cpu.X-1] = &v
-				} else {
-					t := left.Type
-					switch t {
-					case "rectdata":
-						left = cpu.Address(left)
-						rect := cpu.mem.Space[left.Point_y+left.Offset_y][left.Point_x+left.Offset_x]
-						cpu.mem.Space[rect.Point_y+left.Rectoffset_y][rect.Point_x+left.Rectoffset_x] = &v
-					case "point":
-						left = cpu.Address(left)
-						cpu.mem.Space[left.Point_y+left.Offset_y][left.Point_x+left.Offset_x] = &v
-					default:
-						cpu.mem.Space[cpu.Y][cpu.X-1] = &v
-					}
+				t := left.Type
+				switch t {
+				case "rectdata":
+					left = cpu.Address(left)
+					rect := cpu.mem.At(left.Point_x+left.Offset_x, left.Point_y+left.Offset_y)
+					cpu.mem.Set(rect.Point_x+left.Rectoffset_x, rect.Point_y+left.Rectoffset_y, v)
+				case "point":
+					left = cpu.Address(left)
+					cpu.mem.Set(left.Point_x+left.Offset_x, left.Point_y+left.Offset_y, v)
+				default:
+					cpu.mem.Set(cpu.X-1, cpu.Y, v)
 				}
-
 				cpu.Y++
 			case "!":
-				right := cpu.mem.Space[cpu.Y][cpu.X+1].Clone()
+				right := cpu.Right()
 				t := right.Type
 				switch t {
 				case "point":
 					right = cpu.Address(right)
-					cpu.mem.Space[right.Point_y+right.Offset_y][right.Point_x+right.Offset_x].V_bool = !cpu.mem.Space[right.Point_y+right.Offset_y][right.Point_x+right.Offset_x].V_bool
+					updater := cpu.mem.At(right.Point_x+right.Offset_x, right.Point_y+right.Offset_y)
+					updater.V_bool = !updater.V_bool
+					cpu.mem.Set(right.Point_x+right.Offset_x, right.Point_y+right.Offset_y, updater)
 				default:
-					cpu.mem.Space[cpu.Y][cpu.X+1].V_bool = !cpu.mem.Space[cpu.Y][cpu.X+1].V_bool
+					updater := cpu.mem.At(cpu.X+1, cpu.Y)
+					updater.V_bool = !updater.V_bool
+					cpu.mem.Set(cpu.X+1, cpu.Y, updater)
 				}
 				cpu.Y++
 				//双运算
@@ -143,7 +135,7 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 			case "*":
 				fallthrough
 			case "/":
-				left := cpu.mem.Space[cpu.Y][cpu.X-1].Clone()
+				left := cpu.Left()
 				if left.Type == "point" {
 					left = cpu.Address(left)
 					left = cpu.mem.Space[left.Point_y+left.Offset_y][left.Point_x+left.Offset_x].Clone()
@@ -207,14 +199,12 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 				nextfuncp := cpu.mem.Space[cpu.Y+1][cpu.X].Clone()
 				nextfuncrect := cpu.mem.Space[nextfuncp.Point_y][nextfuncp.Point_x].Clone()
 				nextfuncrect.Point_y, nextfuncrect.Point_x = nextfuncp.Point_y, nextfuncp.Point_x
-				cpu.Print()
 				for i := 0; i < nextfuncrect.Size_y; i++ {
 					for j := 0; j < nextfuncrect.Size_x; j++ {
 						sourceatom := cpu.mem.Space[nextfuncrect.Point_y+nextfuncrect.Offset_y+i][nextfuncrect.Point_x+nextfuncrect.Offset_x+j].Clone()
 						cpu.mem.Space[cpu.Y+i][cpu.Funcrect.Point_x+cpu.Funcrect.Size_x+j] = &sourceatom
 					}
 				}
-				cpu.mem.Print()
 				argsrect := cpu.mem.Space[cpu.Y+2][cpu.X].Clone()
 				//参数rect的start.X,Y 使用相对地址
 				for i := 0; i < argsrect.Size_y; i++ {
@@ -223,7 +213,6 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 						cpu.mem.Space[cpu.Y+i][cpu.Funcrect.Point_x+cpu.Funcrect.Size_x+1+j] = &sourceatom
 					}
 				}
-				cpu.mem.Print()
 
 				//缓存函数体的调用者caller地址
 				oldfuncrect := cpu.Funcrect
@@ -239,7 +228,7 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 
 				//缓存函数体的调用者caller地址
 				cpu.mem.Space[cpu.Y+4][cpu.Funcrect.Point_x+cpu.Funcrect.Size_x] = &mirror.Atom{Type: "point", Point_x: cpu.X, Point_y: cpu.Y}
-				cpu.mem.Print()
+
 				//移动至函数
 				//这里的funcrect pointxy必须是绝对坐标
 
@@ -249,15 +238,12 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 
 				//进入新的funcrect执行体，平移过去
 				cpu.X = cpu.Funcrect.Point_x
-				cpu.Print()
+
 				//进入函数第一个操作
 
 				firstop := cpu.mem.Space[cpu.Y+2][cpu.X].Clone()
 				cpu.X += firstop.Offset_x
 				cpu.Y += firstop.Offset_y
-
-				cpu.mem.Print()
-				cpu.Print()
 
 			case "return":
 				//回收执行现场

@@ -11,7 +11,7 @@ func mem(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWrite
 		Mem interface{}
 		Cpu interface{}
 	}{}
-	sp := memory.Rect(0, 0, len(memory.Space), len(memory.Space[0]))
+	sp := memory.Rect(0, 0, memory.X(), memory.Y())
 	status.Cpu = runners
 	status.Mem = sp
 	bs, err := json.Marshal(status)

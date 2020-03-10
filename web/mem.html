@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <meta http-equiv="Refresh" content="2" />
     <script src="https://cdn.bootcss.com/fabric.js/4.0.0-beta.5/fabric.js"></script>
     <meta charset="UTF-8">
     <title>mem</title>
     <script src="atom.js"></script>
     <script type="text/javascript">
- 
+        var fb=new fabric.Canvas('mem')
         function load() {
-            memborder(new fabric.Canvas('background'))
+            fb=new fabric.Canvas('mem')
+            memborder(fb,32)
             var xmlhttp =new XMLHttpRequest();
             xmlhttp.onreadystatechange=function()
             {
                 if (xmlhttp.readyState==4 && xmlhttp.status==200)
                 {
                     let status = JSON.parse(xmlhttp.responseText);
-                    draw(status.Mem,status.Cpu);
+                    draw(fb,status.Mem,status.Cpu);
                 }
             }
             xmlhttp.open("GET","/mem",true);
@@ -45,9 +46,6 @@
     </script>
 </head>
 <body onload="load()">
-    
-    <canvas id="background" width="1600" height="1600"></canvas>
-    <canvas id="mem" width="1600" height="1600"></canvas>
     <style>
         body {
           position: relative;
@@ -56,5 +54,8 @@
         #mem { z-index: 2 }
         #background { z-index: 1 }
       </style>
+    <!-- <canvas id="background" width="1600" height="1600"></canvas> -->
+    <canvas id="mem" width="1600" height="1600"></canvas>
+
 </body>
 </html>

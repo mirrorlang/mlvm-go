@@ -13,12 +13,35 @@ type Memoryspace struct {
 	n     int
 }
 
-func (m *Memoryspace) Rect(point_x, point_y int, offset_x, offset_y int) (r [][]*mirror.Atom) {
-	r = make([][]*mirror.Atom, offset_y)
+func (m *Memoryspace) Y() int {
+	return len(m.Space)
+}
+
+func (m *Memoryspace) X() int {
+	return len(m.Space[0])
+}
+
+func (m *Memoryspace) At(x, y int) mirror.Atom {
+	atom := m.Space[y][x]
+	if atom == nil {
+		return mirror.Atom{Type: "null"}
+	}
+	return *atom
+}
+
+func (m *Memoryspace) Set(x, y int, a mirror.Atom) {
+	if a.Type == "" {
+		m.Space[y][x] = nil
+	} else {
+		m.Space[y][x] = &a
+	}
+}
+func (m *Memoryspace) Rect(point_x, point_y int, offset_x, offset_y int) (r [][]mirror.Atom) {
+	r = make([][]mirror.Atom, offset_y)
 	for i := 0; i < offset_y; i++ {
-		r[i] = make([]*mirror.Atom, offset_x)
+		r[i] = make([]mirror.Atom, offset_x)
 		for j := 0; j < offset_x; j++ {
-			r[i][j] = m.Space[point_y+i][point_x+j]
+			r[i][j] = m.At(point_x+j, point_y+i)
 		}
 	}
 	return
@@ -50,18 +73,14 @@ const PrintWidth = 16
 
 func (m *Memoryspace) Print() {
 	fmt.Print("mem:    ")
-	for j := 0; j < len(m.Space[0]); j++ {
+	for j := 0; j < m.X(); j++ {
 		fmt.Printf("|X=%-"+strconv.Itoa(PrintWidth-2)+"d", j)
 	}
 	fmt.Println()
-	for i := 0; i < len(m.Space); i++ {
+	for i := 0; i < m.Y(); i++ {
 		fmt.Printf("|Y=%-5d", i)
-		for j := 0; j < len(m.Space[i]); j++ {
-			atom := m.Space[i][j]
-			if atom == nil {
-				fmt.Printf("|%"+strconv.Itoa(PrintWidth)+"s", "")
-				continue
-			}
+		for j := 0; j < m.X(); j++ {
+			atom := m.At(j, i)
 			var c log.Colortext
 			switch atom.Type {
 			case "int":

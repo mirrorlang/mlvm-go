@@ -44,7 +44,7 @@ func test_1() {
 }
 
 func main() {
-	//cpu0.Computecycle=time.Millisecond*3001
+	cpu0.Computecycle = time.Millisecond * 3001
 	go cpu0.Do(mirror.Atom{Point_x: 0, Point_y: 0})
 	//test_0()
 	go test_1()
