@@ -204,20 +204,24 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 
 			case "call": //函数调用,这里必须要知道函数体的rect
 				nextfuncp := cpu.mem.At(cpu.X, cpu.Y+1)
-				nextfuncrect := cpu.mem.At(nextfuncp.X, nextfuncp.Y)
-				nextfuncrect.Y, nextfuncrect.X = nextfuncp.Y, nextfuncp.X
+				nextfuncrect := cpu.mem.At(nextfuncp.X, nextfuncp.Y)      //方法区的地址
+				newfuncrect := nextfuncrect                               //新执行现场
+				nextfuncrect.Y, nextfuncrect.X = nextfuncp.Y, nextfuncp.X //方法区的绝对地址
+
+				newfuncrect.Y, newfuncrect.X = cpu.Y, cpu.Funcrect.X+cpu.Funcrect.Size_x //新执行现场的地址
+
 				for i := 0; i < nextfuncrect.Size_y; i++ {
 					for j := 0; j < nextfuncrect.Size_x; j++ {
 						sourceatom := cpu.mem.At(nextfuncrect.X+nextfuncrect.Offset_x+j, nextfuncrect.Y+nextfuncrect.Offset_y+i)
-						cpu.mem.Set(cpu.Funcrect.X+cpu.Funcrect.Size_x+j, cpu.Y+i, sourceatom)
+						cpu.mem.Set(newfuncrect.X+j, newfuncrect.Y+i, sourceatom)
 					}
 				}
 				argsrect := cpu.mem.At(cpu.X, cpu.Y+2)
 				//参数rect的start.X,Y 使用相对地址
 				for i := 0; i < argsrect.Size_y; i++ {
 					for j := 0; j < argsrect.Size_x; j++ {
-						sourceatom := cpu.mem.At(cpu.X+argsrect.X+argsrect.Offset_x+j, cpu.Y+argsrect.Y+argsrect.Offset_y+i)
-						cpu.mem.Set(cpu.Funcrect.X+cpu.Funcrect.Size_x+1+j, cpu.Y+i, sourceatom)
+						sourceatom := cpu.mem.At(cpu.X+argsrect.Offset_x+j, cpu.Y+argsrect.Offset_y+i)
+						cpu.mem.Set(newfuncrect.X+1+j, newfuncrect.Y+i, sourceatom) //参数区是在函数体的x+1位置
 					}
 				}
 
@@ -239,12 +243,9 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 				//移动至函数
 				//这里的funcrect pointxy必须是绝对坐标
 
-				cpu.Funcrect = nextfuncrect
-				cpu.Funcrect.X = cpu.Funcrect.X + oldfuncrect.Size_x
-				cpu.Funcrect.Y = cpu.Y
-
+				cpu.Funcrect = newfuncrect
 				//进入新的funcrect执行体，平移过去
-				cpu.X = cpu.Funcrect.X
+				cpu.X = newfuncrect.X
 
 				//进入函数第一个操作
 

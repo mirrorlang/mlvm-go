@@ -2,7 +2,6 @@ package monitor
 
 import (
 	"encoding/json"
-	"fmt"
 	"mlvm/vm"
 	"net/http"
 	"strconv"
@@ -40,6 +39,14 @@ func arg(r *http.Request) (X, Y, size_X, size_Y int) {
 	}
 	return
 }
+func memcode(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWriter, request *http.Request) {
+	sp := memory.Rect(arg(request))
+	str := vm.Code(sp)
+	_, err := writer.Write([]byte(str))
+	if err != nil {
+		panic(err)
+	}
+}
 func mem(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWriter, request *http.Request) {
 	status := struct {
 		Mem interface{}
@@ -47,8 +54,6 @@ func mem(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWrite
 	}{}
 
 	sp := memory.Rect(arg(request))
-	str := vm.Code(sp)
-	fmt.Println(str)
 	status.Cpu = runners
 	status.Mem = sp
 	bs, err := json.Marshal(status)

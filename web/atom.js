@@ -51,13 +51,13 @@ function drawatom(card,mem,cpu,i,j){
             break;
         case "point":
             textbox.text="·("+atom.X;
-            if(atom.Offset_x>0){
+            if(atom.Offset_x>=0){
                 textbox.text+="+"+atom.Offset_x;
             }else{
                 textbox.text+=""+atom.Offset_x;
             }
             textbox.text+=","+atom.Y;
-            if(atom.Offset_y>0){
+            if(atom.Offset_y>=0){
                 textbox.text+="+"+atom.Offset_y;
             }else{
                 textbox.text+=""+atom.Offset_y;
