@@ -19,11 +19,10 @@ func test_0() {
 	vm.TestExpression_null(mem, mirror.Atom{X: 0, Y: 0})
 	vm.TestExpression_not(mem, mirror.Atom{X: 0, Y: 2})
 	vm.TestExpression_goto(mem, mirror.Atom{X: 0, Y: 3})
-	mem.Print()
+
 	fmt.Println()
 	cpu0.Goon()
 	time.Sleep(time.Second * 5)
-	mem.Print()
 
 }
 
@@ -33,11 +32,10 @@ func test_1() {
 	}()
 	time.Sleep(time.Second)
 	vm.TestFunc(mem)
-	mem.Print()
+	vm.TestCallfunc(mem)
 
 	cpu0.Goon()
 	time.Sleep(time.Second * 2)
-	mem.Print()
 
 	fmt.Scanln()
 

@@ -88,7 +88,7 @@ function drawatom(card,mem,cpu,i,j){
                     break
                 case "call":
                     let fp=mem[i+1][j]
-                    let func=mem[fp.Point_y][fp.Point_x]
+                    let func=mem[fp.Y][fp.X]
                     textbox.text=func.Name+"()"
                     
                     let callnext= new fabric.Line([ j*atomsize,i*atomsize, (j+cpu[0].Funcrect.Size_x)*atomsize,(i)*atomsize], {
@@ -127,8 +127,8 @@ function drawcpu(card,cpu){
     card.add(cpup);
 
     let cpufuncrect= new fabric.Rect( {
-        left:cpu.Funcrect.Point_x*atomsize,
-        top: cpu.Funcrect.Point_y*atomsize,
+        left:cpu.Funcrect.X*atomsize,
+        top: cpu.Funcrect.Y*atomsize,
         width:atomsize*cpu.Funcrect.Size_x,
         height:atomsize*cpu.Funcrect.Size_y,
         selectable: false,
