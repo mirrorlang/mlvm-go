@@ -11,7 +11,7 @@ type Atom struct {
 	Name               string
 	V_int              int
 	V_string           string
-	Point_x, Point_y   int
+	X, Y               int
 	Offset_x, Offset_y int
 
 	Size_x, Size_y             int
@@ -41,9 +41,9 @@ func (a *Atom) Value() interface{} {
 	case "op":
 		return a.Operator
 	case "point":
-		return [][]int{[]int{a.Point_x, a.Point_y}, []int{a.Offset_x, a.Offset_y}}
+		return [][]int{[]int{a.X, a.Y}, []int{a.Offset_x, a.Offset_y}}
 	case "rect":
-		return [][]int{[]int{a.Point_x, a.Point_y}, []int{a.Size_x, a.Size_y}}
+		return [][]int{[]int{a.X, a.Y}, []int{a.Size_x, a.Size_y}}
 	default:
 		return "unknow"
 	}
@@ -51,7 +51,7 @@ func (a *Atom) Value() interface{} {
 func (a *Atom) String() string {
 	switch a.Type {
 	case "point":
-		if a.Point_x == 0 && a.Point_y == 0 {
+		if a.X == 0 && a.Y == 0 {
 			s := "(" + " "
 			if a.Offset_x >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_x)
@@ -68,14 +68,14 @@ func (a *Atom) String() string {
 			s += ")"
 			return s
 		} else {
-			s := "(" + strconv.Itoa(a.Point_x)
+			s := "(" + strconv.Itoa(a.X)
 			if a.Offset_x >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_x)
 			} else {
 				s += strconv.Itoa(a.Offset_x)
 			}
 			s += ","
-			s += strconv.Itoa(a.Point_y)
+			s += strconv.Itoa(a.Y)
 			if a.Offset_y >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_y)
 			} else {
@@ -115,10 +115,10 @@ func (a *Atom) String() string {
 
 	case "rect":
 		s := "["
-		if a.Point_y == 0 && a.Point_x == 0 {
+		if a.Y == 0 && a.X == 0 {
 			s += " "
 		} else {
-			s += strconv.Itoa(a.Point_x)
+			s += strconv.Itoa(a.X)
 		}
 
 		if a.Offset_x >= 0 {
@@ -132,10 +132,10 @@ func (a *Atom) String() string {
 			panic("size <0")
 		}
 		s += ","
-		if a.Point_y == 0 && a.Point_x == 0 {
+		if a.Y == 0 && a.X == 0 {
 			s += " "
 		} else {
-			s += strconv.Itoa(a.Point_y)
+			s += strconv.Itoa(a.Y)
 		}
 		if a.Offset_y >= 0 {
 			s += "+" + strconv.Itoa(a.Offset_y)
