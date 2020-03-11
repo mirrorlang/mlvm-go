@@ -1,9 +1,11 @@
 package vm
 
 import (
+	"fmt"
 	"github.com/beevik/etree"
 	"mirror"
 	"os"
+	"strings"
 )
 
 func Loadapp() *etree.Document {
@@ -16,6 +18,29 @@ func Loadapp() *etree.Document {
 	return doc
 }
 
+func Code(funcarea [][]mirror.Atom) (r string) {
+	for j := 0; j < len(funcarea); j++ {
+		for i := 0; i < len(funcarea[0]); i++ {
+			atom := funcarea[j][i]
+			r += fmt.Sprint(atom.Value()) + "\t"
+		}
+		r += "\n"
+
+	}
+	return
+}
+func Load(fstr string) (funcarea [][]mirror.Atom) {
+
+	for _, line := range strings.Split(fstr, "\n") {
+		exp := make([]mirror.Atom, 0)
+		for _, atom := range strings.Split(line, "\t") {
+			exp = append(exp, mirror.Atom{Type: "string", V_string: atom})
+		}
+		funcarea = append(funcarea, exp)
+	}
+
+	return
+}
 func TestExpression_null(r *Memoryspace, start mirror.Atom) {
 	r.space[start.Y][start.X] = &mirror.Atom{Type: "op", Operator: "nil"}
 	r.space[start.Y][start.X+1] = &mirror.Atom{Type: "int", V_int: 10086}

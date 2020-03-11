@@ -20,7 +20,7 @@
                     draw(fb,status.Mem,status.Cpu);
                 }
             }
-            xmlhttp.open("GET","/mem",true);
+            xmlhttp.open("GET","/mem?size_x=32&size_y=32",true);
             xmlhttp.send();
         }
         function connect() {

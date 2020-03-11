@@ -31,28 +31,33 @@ func (a *Atom) Value() interface{} {
 	}
 	switch a.Type {
 	case "null":
-		return nil
+		return ""
 	case "int":
 		return a.V_int
 	case "string":
 		return a.V_string
 	case "bool":
 		return a.V_bool
+	case "func":
+		return a.Name + "()"
 	case "op":
 		return a.Operator
 	case "point":
-		return [][]int{[]int{a.X, a.Y}, []int{a.Offset_x, a.Offset_y}}
+		fallthrough
 	case "rect":
-		return [][]int{[]int{a.X, a.Y}, []int{a.Size_x, a.Size_y}}
+		fallthrough
+	case "rectdata":
+		return a.String()
 	default:
 		return "unknow"
 	}
 }
+
 func (a *Atom) String() string {
 	switch a.Type {
 	case "point":
 		if a.X == 0 && a.Y == 0 {
-			s := "(" + " "
+			s := "·(" + " "
 			if a.Offset_x >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_x)
 			} else {
@@ -68,7 +73,7 @@ func (a *Atom) String() string {
 			s += ")"
 			return s
 		} else {
-			s := "(" + strconv.Itoa(a.X)
+			s := "·(" + strconv.Itoa(a.X)
 			if a.Offset_x >= 0 {
 				s += "+" + strconv.Itoa(a.Offset_x)
 			} else {
@@ -86,7 +91,7 @@ func (a *Atom) String() string {
 		}
 
 	case "rectdata":
-		s := "("
+		s := "↴("
 		if a.Offset_x >= 0 {
 			s += "+" + strconv.Itoa(a.Offset_x)
 		} else {
@@ -114,7 +119,7 @@ func (a *Atom) String() string {
 		return s
 
 	case "rect":
-		s := "["
+		s := "□["
 		if a.Y == 0 && a.X == 0 {
 			s += " "
 		} else {

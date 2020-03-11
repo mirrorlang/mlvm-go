@@ -69,12 +69,12 @@ func (m *Memoryspace) Resize(N int) {
 	}
 }
 
-const PrintWidth = 16
+const PrintWidth = 20
 
 func (m *Memoryspace) Print() {
 	fmt.Print("mem:    ")
 	for j := 0; j < m.X(); j++ {
-		fmt.Printf("|X=%-"+strconv.Itoa(PrintWidth-2)+"d", j)
+		fmt.Printf("|X=%-"+strconv.Itoa(PrintWidth-3)+"d", j)
 	}
 	fmt.Println()
 	for i := 0; i < m.Y(); i++ {
@@ -89,6 +89,8 @@ func (m *Memoryspace) Print() {
 				c = log.LightBlue
 			case "rect":
 				c = log.Blue
+			case "rectdata":
+				c = log.Pink
 			case "point":
 				c = log.Gray
 			case "func":
@@ -96,7 +98,8 @@ func (m *Memoryspace) Print() {
 			case "op":
 				c = log.Red
 			}
-			log.Print(c, fmt.Sprintf("|%-"+strconv.Itoa(PrintWidth)+"s", atom.String()))
+			fmt.Print(fmt.Sprintf("|"))
+			log.Print(c, fmt.Sprintf("%-"+strconv.Itoa(PrintWidth-1)+"s", atom.String()))
 		}
 		fmt.Println("|")
 	}
