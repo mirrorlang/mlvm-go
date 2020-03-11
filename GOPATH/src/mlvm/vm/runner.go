@@ -64,17 +64,21 @@ func (cpu *Runner) Do(startpoint mirror.Atom) {
 	for {
 		if cpu.Computecycle > 0 {
 			time.Sleep(cpu.Computecycle)
-			cpu.mem.Print()
+			if cpu.status != "idle" {
+				cpu.mem.Print()
+			}
 		}
 		switch cpu.status {
 		case "exit":
 			return
+		case "idle":
 		case "pause":
 			cpu.pause <- 0
 		}
 		if cpu.Y < cpu.mem.Y() {
 			cmd := cpu.Op()
-			if cmd.Type == "" {
+			if cmd.Type == "null" {
+				cpu.status = "idle"
 				continue
 			}
 			switch cmd.Operator {
