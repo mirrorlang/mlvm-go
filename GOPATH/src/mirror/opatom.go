@@ -8,7 +8,7 @@ type OpAtom struct {
 }
 
 func (b OpAtom) Type() string {
-	return "Op"
+	return "op"
 }
 func (b OpAtom) String() string {
 	return fmt.Sprint(b.Op)

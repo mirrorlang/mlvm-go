@@ -45,10 +45,10 @@ func (cpu *Runner) Next() {
 	atom := cpu.mem.At(cpu.X, cpu.Y)
 	var next mirror.Point
 	switch atom.(type) {
-	case mirror.OpAtom:
-		next = atom.(mirror.OpAtom).Nextop
-	case mirror.FuncAtom:
-		next = atom.(mirror.FuncAtom).Nextop
+	case *mirror.OpAtom:
+		next = atom.(*mirror.OpAtom).Nextop
+	case *mirror.FuncAtom:
+		next = atom.(*mirror.FuncAtom).Nextop
 	}
 	if next.Isoffset {
 		cpu.X += next.X

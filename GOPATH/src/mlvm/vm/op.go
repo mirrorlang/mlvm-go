@@ -6,33 +6,35 @@ import (
 )
 
 func op(cpu *Runner) {
-	atom := cpu.mem.At(cpu.X, cpu.Y).(mirror.OpAtom)
+	atom := cpu.mem.At(cpu.X, cpu.Y).(*mirror.OpAtom)
 	switch atom.Op {
 	// 单目运算
 	case "nil":
 		switch t := cpu.OpRight().Type(); t {
 		case "rect":
-			right := cpu.OpRight().(mirror.RectAtom)
+			right := cpu.OpRight().(*mirror.RectAtom)
 			for i := right.Y; i < right.Size_y; i++ {
 				for j := right.X; j < right.Size_x; j++ {
 					cpu.mem.Set(right.X+j, right.Y+i, nil)
 				}
 			}
 		case "point":
-			right := cpu.OpRight().(mirror.PointAtom)
+			right := cpu.OpRight().(*mirror.PointAtom)
 			x, y := right.GlobalAddr(cpu.X, cpu.Y)
 			cpu.mem.Set(x, y, nil)
 		default:
+			cpu.mem.Set(cpu.X+1, cpu.Y, nil)
 			log.Println(log.Red, t)
 		}
+		cpu.Next()
 	case "=":
 		switch t := cpu.OpLeft().Type(); t {
 		case "rectpoint":
-			left := cpu.OpLeft().(mirror.RectPointAtom)
-			rect := cpu.mem.At(left.GlobalAddr(cpu.X, cpu.Y)).(mirror.RectAtom)
+			left := cpu.OpLeft().(*mirror.RectPointAtom)
+			rect := cpu.mem.At(left.GlobalAddr(cpu.X, cpu.Y)).(*mirror.RectAtom)
 			cpu.mem.Set(rect.X+left.Inrect_offset_x, rect.Y+left.Inrect_offset_y, cpu.result)
 		case "point":
-			left := cpu.OpLeft().(mirror.PointAtom)
+			left := cpu.OpLeft().(*mirror.PointAtom)
 			x, y := left.GlobalAddr(cpu.X, cpu.Y)
 			cpu.mem.Set(x, y, cpu.result)
 		default:
@@ -41,7 +43,7 @@ func op(cpu *Runner) {
 	case "!":
 		switch t := cpu.OpLeft().Type(); t {
 		case "point":
-			right := cpu.OpRight().(mirror.PointAtom)
+			right := cpu.OpRight().(*mirror.PointAtom)
 			updater := cpu.mem.At(right.GlobalAddr(cpu.X, cpu.Y)).(mirror.BoolAtom)
 			updater.Value = !updater.Value
 			x, y := right.GlobalAddr(cpu.X, cpu.Y)
@@ -57,20 +59,20 @@ func op(cpu *Runner) {
 	case "-":
 		var left, right mirror.Atom
 		if cpu.OpLeft().Type() == "point" {
-			left = cpu.mem.At(cpu.OpLeft().(mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
+			left = cpu.mem.At(cpu.OpLeft().(*mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
 		} else {
 			left = cpu.OpLeft()
 		}
 		if cpu.OpRight().Type() == "point" {
-			left = cpu.mem.At(cpu.OpRight().(mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
+			left = cpu.mem.At(cpu.OpRight().(*mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
 		}
 		result := 0
 		//todo 指针 运算
 		switch atom.Op {
 		case "+":
-			result = (left.(mirror.NumAtom)).IntValue + (right.(mirror.NumAtom)).IntValue
+			result = (left.(*mirror.NumAtom)).IntValue + (right.(*mirror.NumAtom)).IntValue
 		case "-":
-			result = (left.(mirror.NumAtom)).IntValue - (right.(mirror.NumAtom)).IntValue
+			result = (left.(*mirror.NumAtom)).IntValue - (right.(*mirror.NumAtom)).IntValue
 		}
 		cpu.result = mirror.NumAtom{IntValue: result}
 	case "*":
@@ -78,22 +80,22 @@ func op(cpu *Runner) {
 	case "/":
 		var left, right mirror.Atom
 		if cpu.OpLeft().Type() == "point" {
-			left = cpu.mem.At(cpu.OpLeft().(mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
+			left = cpu.mem.At(cpu.OpLeft().(*mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
 		} else {
 			left = cpu.OpLeft()
 		}
 		if cpu.OpRight().Type() == "point" {
-			left = cpu.mem.At(cpu.OpRight().(mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
+			left = cpu.mem.At(cpu.OpRight().(*mirror.PointAtom).GlobalAddr(cpu.X, cpu.Y))
 		}
 		result := 0
 
 		switch atom.Op {
 		case "*":
-			result = (left.(mirror.NumAtom)).IntValue * (right.(mirror.NumAtom)).IntValue
+			result = (left.(*mirror.NumAtom)).IntValue * (right.(*mirror.NumAtom)).IntValue
 		case "/":
-			result = (left.(mirror.NumAtom)).IntValue / (right.(mirror.NumAtom)).IntValue
+			result = (left.(*mirror.NumAtom)).IntValue / (right.(*mirror.NumAtom)).IntValue
 		}
-		cpu.result = mirror.NumAtom{IntValue: result}
+		cpu.result = &mirror.NumAtom{IntValue: result}
 	case "==":
 		//todo
 	case "rect":
@@ -113,11 +115,11 @@ func op(cpu *Runner) {
 		//cpu.Y++
 
 	case "call": //函数调用,这里必须要知道函数体的rect
-		funcp := cpu.mem.At(cpu.X, cpu.Y+1).(mirror.PointAtom)
+		funcp := cpu.mem.At(cpu.X, cpu.Y+1).(*mirror.PointAtom)
 
-		funcrect := cpu.mem.At(funcp.X, funcp.Y).(mirror.FuncAtom) //方法区的地址
-		nextrunningfuncrect := funcrect                            //新执行现场
-		funcrect.Y, funcrect.X = funcp.Y, funcp.X                  //方法区的绝对地址,一开始这个地址是不知道的
+		funcrect := cpu.mem.At(funcp.X, funcp.Y).(*mirror.FuncAtom) //方法区的地址
+		nextrunningfuncrect := funcrect                             //新执行现场
+		funcrect.Y, funcrect.X = funcp.Y, funcp.X                   //方法区的绝对地址,一开始这个地址是不知道的
 
 		nextrunningfuncrect.Y, nextrunningfuncrect.X = cpu.Y, cpu.Funcrect.X+cpu.Funcrect.Size_x //新执行现场的地址
 
@@ -127,7 +129,7 @@ func op(cpu *Runner) {
 				cpu.mem.Set(nextrunningfuncrect.X+j, nextrunningfuncrect.Y+i, sourceatom)
 			}
 		}
-		argsrect := cpu.mem.At(cpu.X, cpu.Y+2).(mirror.RectAtom)
+		argsrect := cpu.mem.At(cpu.X, cpu.Y+2).(*mirror.RectAtom)
 		//参数rect的start.X,Y 使用相对地址
 		for i := 0; i < argsrect.Size_y; i++ {
 			for j := 0; j < argsrect.Size_x; j++ {
@@ -141,16 +143,16 @@ func op(cpu *Runner) {
 		cpu.mem.Set(cpu.Funcrect.X+cpu.Funcrect.Size_x, cpu.Y+1, oldfuncrect)
 
 		//修改函数体的返回值地址,这里必须是绝对地址
-		returnrect := cpu.mem.At(cpu.X, cpu.Y+3).(mirror.FuncAtom)
+		returnrect := cpu.mem.At(cpu.X, cpu.Y+3).(*mirror.FuncAtom)
 		cpu.mem.Set(cpu.Funcrect.X+cpu.Funcrect.Size_x, cpu.Y+3, returnrect)
 
 		//缓存函数体的调用者caller地址
-		cpu.mem.Set(cpu.Funcrect.X+cpu.Funcrect.Size_x, cpu.Y+4, mirror.PointAtom{Point: mirror.Point{X: cpu.X, Y: cpu.Y}})
+		cpu.mem.Set(cpu.Funcrect.X+cpu.Funcrect.Size_x, cpu.Y+4, &mirror.PointAtom{Point: mirror.Point{X: cpu.X, Y: cpu.Y}})
 
 		//移动至函数
 		//这里的funcrect pointxy必须是绝对坐标
 
-		cpu.Funcrect = nextrunningfuncrect
+		cpu.Funcrect = *nextrunningfuncrect
 		//进入新的funcrect执行体，平移过去
 		cpu.X = nextrunningfuncrect.X
 
@@ -159,10 +161,10 @@ func op(cpu *Runner) {
 	case "return":
 		//回收执行现场
 
-		caller := cpu.mem.At(cpu.Funcrect.X, cpu.Funcrect.Y+4).(mirror.PointAtom)
+		caller := cpu.mem.At(cpu.Funcrect.X, cpu.Funcrect.Y+4).(*mirror.PointAtom)
 		Y, X := caller.Y+4, caller.X
 
-		CallerRect := cpu.mem.At(cpu.Funcrect.X, cpu.Funcrect.Y+1).(mirror.FuncAtom)
+		CallerRect := cpu.mem.At(cpu.Funcrect.X, cpu.Funcrect.Y+1).(*mirror.FuncAtom)
 		for i := 0; i < cpu.Funcrect.Size_y; i++ {
 			for j := 0; j < cpu.Funcrect.Size_x; j++ {
 				cpu.mem.Set(cpu.Funcrect.X+j, cpu.Funcrect.Y+i, nil)
@@ -170,6 +172,6 @@ func op(cpu *Runner) {
 		}
 		//return
 		cpu.Y, cpu.X = Y, X
-		cpu.Funcrect = CallerRect
+		cpu.Funcrect = *CallerRect
 	}
 }

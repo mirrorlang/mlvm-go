@@ -1,8 +1,9 @@
-package vm
+package test
 
 import (
 	"github.com/beevik/etree"
 	"mirror"
+	"mlvm/vm"
 	"os"
 	"strings"
 )
@@ -40,12 +41,12 @@ func Load(fstr string) (funcarea [][]mirror.Atom) {
 
 	return
 }
-func TestExpression_null(r *Memoryspace, start mirror.PointAtom) {
-	r.space[start.Y][start.X] = &mirror.OpAtom{Op: "nil"}
-	r.space[start.Y][start.X+1] = &mirror.NumAtom{IntValue: 10086}
-	r.space[start.Y+1][start.X] = &mirror.OpAtom{Op: "empty"}
-	r.space[start.Y+1][start.X+1] = &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6}}
-	r.space[1][6] = &mirror.NumAtom{IntValue: 10086}
+func TestExpression_null(r *vm.Memoryspace, start mirror.PointAtom) {
+	r.Set(0, 0, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
+	r.Set(1, 0, &mirror.NumAtom{IntValue: 10086})
+	r.Set(0, 1, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
+	r.Set(1, 1, &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6}})
+	r.Set(6, 1, &mirror.NumAtom{IntValue: 10086})
 }
 
 //

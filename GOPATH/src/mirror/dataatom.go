@@ -5,7 +5,7 @@ import (
 )
 
 type NullAtom struct {
-	name string
+	Name string
 }
 
 func (b NullAtom) Type() string {
@@ -14,13 +14,10 @@ func (b NullAtom) Type() string {
 func (b NullAtom) String() string {
 	return ""
 }
-func (b NullAtom) Name() string {
-	return b.name
-}
 
 type BoolAtom struct {
 	Value bool
-	name  string
+	Name  string
 }
 
 func (b BoolAtom) Type() string {
@@ -30,13 +27,9 @@ func (b BoolAtom) String() string {
 	return fmt.Sprint(b.Value)
 }
 
-func (b BoolAtom) Name() string {
-	return b.name
-}
-
 type StringAtom struct {
 	value string
-	name  string
+	Name  string
 }
 
 func (b StringAtom) Type() string {
@@ -45,13 +38,10 @@ func (b StringAtom) Type() string {
 func (b StringAtom) String() string {
 	return b.value
 }
-func (b StringAtom) Name() string {
-	return b.name
-}
 
 type NumAtom struct {
 	IntValue int
-	name     string
+	Name     string
 }
 
 func (b NumAtom) Type() string {
@@ -59,9 +49,6 @@ func (b NumAtom) Type() string {
 }
 func (b NumAtom) String() string {
 	return fmt.Sprint(b.IntValue)
-}
-func (b NumAtom) Name() string {
-	return b.name
 }
 
 //type Atom struct {

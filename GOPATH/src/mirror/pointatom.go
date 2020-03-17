@@ -16,7 +16,7 @@ func (b Point) GlobalAddr(x, y int) (int, int) {
 }
 
 type PointAtom struct {
-	name string
+	Name string
 	Point
 }
 
@@ -26,9 +26,6 @@ func (b PointAtom) Type() string {
 func (p PointAtom) String() string {
 	return ".(" + fmt.Sprint(p.X) + "," + fmt.Sprint(p.Y) + ")"
 }
-func (b PointAtom) Name() string {
-	return b.name
-}
 
 type Rect struct {
 	Size_x, Size_y int
@@ -36,7 +33,7 @@ type Rect struct {
 }
 
 type RectAtom struct {
-	name string
+	Name string
 	Rect
 }
 
@@ -46,12 +43,9 @@ func (b RectAtom) Type() string {
 func (p RectAtom) String() string {
 	return "□[" + fmt.Sprint(p.X) + "_" + fmt.Sprint(p.Size_x) + "," + fmt.Sprint(p.Y) + "|" + fmt.Sprint(p.Size_y) + "]"
 }
-func (b RectAtom) Name() string {
-	return b.name
-}
 
 type RectPointAtom struct {
-	name string
+	Name string
 	Point
 	Inrect_offset_x, Inrect_offset_y int
 }
@@ -59,15 +53,13 @@ type RectPointAtom struct {
 func (p RectPointAtom) String() string {
 	return "□(" + fmt.Sprint(p.X) + "," + fmt.Sprint(p.Y) + ").(" + fmt.Sprint(p.Inrect_offset_x) + "," + fmt.Sprint(p.Inrect_offset_y) + ")"
 }
-func (b RectPointAtom) Name() string {
-	return b.name
-}
+
 func (b RectPointAtom) Type() string {
 	return "rectpoint"
 }
 
 type FuncAtom struct {
-	name   string
+	Name   string
 	Nextop Point
 	Rect
 }
@@ -76,8 +68,5 @@ func (b FuncAtom) Type() string {
 	return "func"
 }
 func (b FuncAtom) String() string {
-	return "func " + b.name + "()"
-}
-func (b FuncAtom) Name() string {
-	return b.name
+	return "func " + b.Name + "()"
 }

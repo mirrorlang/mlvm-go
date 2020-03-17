@@ -30,7 +30,7 @@ func (m *Memoryspace) At(x, y int) mirror.Atom {
 }
 
 func (m *Memoryspace) Set(x, y int, a mirror.Atom) {
-	if a.Type() == "" {
+	if a == nil || a.Type() == "" {
 		m.space[y][x] = nil
 	} else {
 		m.space[y][x] = a

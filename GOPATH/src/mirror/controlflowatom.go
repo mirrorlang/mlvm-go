@@ -3,7 +3,7 @@ package mirror
 import "fmt"
 
 type GotoAtom struct {
-	op string //go goto
+	Op string //go goto
 }
 
 func (b GotoAtom) Type() string {
@@ -13,7 +13,7 @@ func (b GotoAtom) ControlflowType() string {
 	return "Goto"
 }
 func (b GotoAtom) String() string {
-	return fmt.Sprint(b.op)
+	return fmt.Sprint(b.Op)
 }
 
 type IfAtom struct {

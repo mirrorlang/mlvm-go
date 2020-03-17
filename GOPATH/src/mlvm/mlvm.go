@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mirror"
 	"mlvm/monitor"
+	"mlvm/test"
 	"mlvm/vm"
 	"time"
 )
@@ -16,7 +17,7 @@ func test_0() {
 		cpu0.Pause()
 	}()
 	time.Sleep(time.Second)
-	vm.TestExpression_null(mem, mirror.PointAtom{Point: mirror.Point{X: 0, Y: 0}})
+	test.TestExpression_null(mem, mirror.PointAtom{Point: mirror.Point{X: 0, Y: 0}})
 	//vm.TestExpression_not(mem, mirror.PointAtom{Point: mirror.Point{X: 0, Y: 2}})
 	//vm.TestExpression_goto(mem, mirror.PointAtom{Point: mirror.Point{X: 0, Y: 3}})
 
