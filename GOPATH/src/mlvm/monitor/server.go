@@ -44,8 +44,8 @@ func Run(runners []*vm.Runner, memory *vm.Memoryspace) {
 		switch request.URL.Path[1:] {
 		case "mem":
 			mem(runners, memory, writer, request)
-		case "memcode":
-			memcode(runners, memory, writer, request)
+		case "code":
+			code(runners, memory, writer, request)
 		}
 	})
 

@@ -9,7 +9,7 @@ import (
 )
 
 type Memoryspace struct {
-	space [][]*mirror.Atom
+	space [][]mirror.Atom
 	n     int
 }
 
@@ -24,16 +24,16 @@ func (m *Memoryspace) X() int {
 func (m *Memoryspace) At(x, y int) mirror.Atom {
 	atom := m.space[y][x]
 	if atom == nil {
-		return mirror.Atom{Type: "null"}
+		return mirror.NullAtom{}
 	}
-	return *atom
+	return atom
 }
 
 func (m *Memoryspace) Set(x, y int, a mirror.Atom) {
-	if a.Type == "" {
+	if a.Type() == "" {
 		m.space[y][x] = nil
 	} else {
-		m.space[y][x] = &a
+		m.space[y][x] = a
 	}
 }
 func (m *Memoryspace) Rect(point_x, point_y int, offset_x, offset_y int) (r [][]mirror.Atom) {
@@ -57,14 +57,14 @@ func (m *Memoryspace) Resize(N int) {
 	m.n = N
 	leng := (2 << m.n)
 	if m.space != nil {
-		m.space = append(m.space, make([][]*mirror.Atom, leng-len(m.space))...)
+		m.space = append(m.space, make([][]mirror.Atom, leng-len(m.space))...)
 		for i := 0; i < leng; i++ {
-			m.space[i] = append(m.space[i], make([]*mirror.Atom, leng-len(m.space[i]))...)
+			m.space[i] = append(m.space[i], make([]mirror.Atom, leng-len(m.space[i]))...)
 		}
 	} else {
-		m.space = make([][]*mirror.Atom, leng)
+		m.space = make([][]mirror.Atom, leng)
 		for i := 0; i < leng; i++ {
-			m.space[i] = make([]*mirror.Atom, leng)
+			m.space[i] = make([]mirror.Atom, leng)
 		}
 	}
 }
@@ -82,7 +82,7 @@ func (m *Memoryspace) Print() {
 		for j := 0; j < m.X(); j++ {
 			atom := m.At(j, i)
 			var c log.Colortext
-			switch atom.Type {
+			switch atom.Type() {
 			case "int":
 				c = log.Cyan
 			case "bool":

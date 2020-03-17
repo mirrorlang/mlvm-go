@@ -6,6 +6,10 @@ import (
 	"os"
 )
 
+type Atom interface {
+	Type() string
+}
+
 func Loadapp() {
 	var ml_home = os.Getenv("ML_HOME")
 	fs, err := ioutil.ReadDir(ml_home)
@@ -24,5 +28,6 @@ func a(apppath string) {
 
 }
 func main() {
+
 	Loadapp()
 }
