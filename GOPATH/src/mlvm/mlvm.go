@@ -12,7 +12,6 @@ import (
 var mem = vm.NewMemory()
 var cpus []*vm.Runner
 
-
 func test_nil(cpu *vm.Runner) {
 	go func() {
 		cpu.Pause()
@@ -28,6 +27,14 @@ func test_not(cpu *vm.Runner) {
 	time.Sleep(time.Second)
 	test.TestExpression_not(mem, mirror.Point{X: 4, Y: 4})
 	//vm.TestExpression_goto(mem, mirror.PointAtom{Point: mirror.Point{X: 0, Y: 3}})
+	cpu.Goon()
+}
+func test_goto(cpu *vm.Runner) {
+	go func() {
+		cpu.Pause()
+	}()
+	time.Sleep(time.Second)
+	test.TestExpression_goto(mem, mirror.Point{X: 0, Y: 6})
 	cpu.Goon()
 }
 
@@ -50,16 +57,20 @@ func test_1(cpu *vm.Runner) {
 func main() {
 	var cpu0 = vm.NewRunner(mem)
 	var cpu1 = vm.NewRunner(mem)
+	var cpu2 = vm.NewRunner(mem)
 	cpus = append(cpus, cpu0)
 	cpus = append(cpus, cpu1)
+	cpus = append(cpus, cpu2)
 	cpu0.Computecycle = time.Millisecond * 3001
 	cpu1.Computecycle = time.Millisecond * 4001
+	cpu2.Computecycle = time.Millisecond * 4001
 	go cpu0.Do(0, 0)
-
 	go test_nil(cpu0)
 
 	go cpu1.Do(4, 4)
 	go test_not(cpu1)
-	//go test_1()
+
+	go cpu2.Do(0, 6)
+	go test_goto(cpu2)
 	monitor.Run(cpus, mem)
 }

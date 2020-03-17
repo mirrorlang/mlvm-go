@@ -4,8 +4,8 @@ import "mirror"
 
 func controlflow(cpu *Runner) {
 	switch cpu.mem.At(cpu.X, cpu.Y).(type) {
-	case mirror.GotoAtom:
-		right := cpu.OpRight().(mirror.PointAtom)
+	case *mirror.GotoAtom:
+		right := cpu.OpRight().(*mirror.PointAtom)
 		if right.Isoffset {
 			cpu.X += right.X
 			cpu.Y += right.Y
@@ -13,9 +13,9 @@ func controlflow(cpu *Runner) {
 			cpu.X = right.X
 			cpu.Y = right.Y
 		}
-	case mirror.IfAtom:
-		ifat := cpu.mem.At(cpu.X, cpu.Y).(mirror.IfAtom)
-		b := cpu.OpRight().(mirror.BoolAtom)
+	case *mirror.IfAtom:
+		ifat := cpu.mem.At(cpu.X, cpu.Y).(*mirror.IfAtom)
+		b := cpu.OpRight().(*mirror.BoolAtom)
 		if b.Value {
 			if ifat.True.Isoffset {
 				cpu.X += ifat.True.X
@@ -33,6 +33,6 @@ func controlflow(cpu *Runner) {
 				cpu.Y = ifat.Else.Y
 			}
 		}
-	case mirror.SwitchAtom:
+	case *mirror.SwitchAtom:
 	}
 }

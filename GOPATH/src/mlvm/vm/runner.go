@@ -52,7 +52,7 @@ func (c *Runner) OpLeft() mirror.Atom {
 }
 func (cpu *Runner) Next() {
 	atom := cpu.mem.At(cpu.X, cpu.Y)
-	var next mirror.Point
+	var next = mirror.Point{X: 0, Y: 1, Isoffset: true}
 	switch atom.(type) {
 	case *mirror.OpAtom:
 		next = atom.(*mirror.OpAtom).Nextop

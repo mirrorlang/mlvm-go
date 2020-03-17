@@ -60,17 +60,13 @@ func TestExpression_not(r *vm.Memoryspace, s mirror.Point) {
 
 }
 
-//func TestExpression_goto(r *Memoryspace, start mirror.Atom) {
-//	r.space[start.Y][start.X] = &mirror.Atom{Type: "op", Operator: "go"}
-//	r.space[start.Y][start.X+1] = &mirror.Atom{Type: "point", Offset_y: 1, Offset_x: 3}
-//	r.space[start.Y+1][start.X+3] = &mirror.Atom{Type: "op", Operator: "*"}
-//	r.space[start.Y+1][start.X+2] = &mirror.Atom{Type: "int", V_int: 1321}
-//	r.space[start.Y+1][start.X+4] = &mirror.Atom{Type: "int", V_int: 124}
-//	r.space[start.Y+1][start.X+1] = &mirror.Atom{Type: "op", Operator: "="}
-//	r.space[start.Y+2][start.X+3] = &mirror.Atom{Type: "op", Operator: "go"}
-//	r.space[start.Y+2][start.X+4] = &mirror.Atom{Type: "point", Offset_y: -1, Offset_x: -2}
-//}
-//
+func TestExpression_goto(r *vm.Memoryspace, s mirror.Point) {
+	r.Set(s.X, s.Y, &mirror.GotoAtom{Op: "go"})
+	r.Set(s.X+1, s.Y, &mirror.PointAtom{Point: mirror.Point{4, 4, false}})
+	r.Set(4, 5, &mirror.GotoAtom{Op: "go"})
+	r.Set(5, 5, &mirror.PointAtom{Point: mirror.Point{0, 6, false}})
+}
+
 //func TestFunc(r *Memoryspace) {
 //	r.space[2][0] = &mirror.Atom{Type: "func", Size_y: 8, Size_x: 4, Name: "addrex"} //func addr
 //	r.space[4][0] = &mirror.Atom{Type: "point", Offset_y: 3, Offset_x: 2}            //first op pisition

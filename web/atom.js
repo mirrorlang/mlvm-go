@@ -72,16 +72,10 @@ function drawatom(card,mem,cpu,i,j){
             textbox.text=atom.V_string+"";
             textbox.fill="green";
             break;
-        case "op":
-            
-            switch (atom.Op){
-                case "+":
-                case "-":
-                case "*":
-                case "/":
-                    textbox.text=atom.Op+""
-                    textbox.fontSize=20;
-                    break;
+        case "controlflow":
+            textbox.text=atom.Op+"";
+            textbox.fill="red";
+            switch(atom.op){
                 case "go":
                     let right=mem[i][j+1]
                     textbox.text=atom.Op+""
@@ -105,6 +99,18 @@ function drawatom(card,mem,cpu,i,j){
 
                     // card.add(r);
                     break
+            }
+
+            break
+        case "op":            
+            switch (atom.Op){
+                case "+":
+                case "-":
+                case "*":
+                case "/":
+                    textbox.text=atom.Op+""
+                    textbox.fontSize=20;
+                    break;
                 case "call":
                     let fp=mem[i+1][j]
                     let func=mem[fp.Y][fp.X]
