@@ -36,10 +36,19 @@ func (r *Runner) Goon() {
 }
 
 func (c *Runner) OpRight() mirror.Atom {
-	return c.mem.At(c.X+1, c.Y)
+	if c.mem.At(c.X+1, c.Y) != nil {
+		return c.mem.At(c.X+1, c.Y)
+	} else {
+		return &mirror.NullAtom{}
+	}
+
 }
 func (c *Runner) OpLeft() mirror.Atom {
-	return c.mem.At(c.X-1, c.Y)
+	if c.mem.At(c.X-1, c.Y) != nil {
+		return c.mem.At(c.X-1, c.Y)
+	} else {
+		return &mirror.NullAtom{}
+	}
 }
 func (cpu *Runner) Next() {
 	atom := cpu.mem.At(cpu.X, cpu.Y)
@@ -76,16 +85,20 @@ func (cpu *Runner) Do(x, y int) {
 		}
 		if cpu.Y < cpu.mem.Y() {
 			atom := cpu.mem.At(cpu.X, cpu.Y)
-			switch atom.Type() {
-			case "op":
-				op(cpu)
-			case "controlflow":
-				controlflow(cpu)
-			default:
+			if atom != nil {
+				switch atom.Type() {
+				case "op":
+					op(cpu)
+				case "controlflow":
+					controlflow(cpu)
+				default:
+					cpu.status = "idle"
+					continue
+				}
+			} else {
 				cpu.status = "idle"
 				continue
 			}
-
 		}
 	}
 }

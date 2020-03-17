@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"github.com/gosdk/log"
 	"mirror"
 )
 
@@ -24,7 +23,6 @@ func op(cpu *Runner) {
 			cpu.mem.Set(x, y, nil)
 		default:
 			cpu.mem.Set(cpu.X+1, cpu.Y, nil)
-			log.Println(log.Red, t)
 		}
 		cpu.Next()
 	case "=":
@@ -40,19 +38,21 @@ func op(cpu *Runner) {
 		default:
 			cpu.mem.Set(cpu.X-1, cpu.Y, cpu.result)
 		}
+		cpu.Next()
 	case "!":
 		switch t := cpu.OpLeft().Type(); t {
 		case "point":
 			right := cpu.OpRight().(*mirror.PointAtom)
-			updater := cpu.mem.At(right.GlobalAddr(cpu.X, cpu.Y)).(mirror.BoolAtom)
+			updater := cpu.mem.At(right.GlobalAddr(cpu.X, cpu.Y)).(*mirror.BoolAtom)
 			updater.Value = !updater.Value
 			x, y := right.GlobalAddr(cpu.X, cpu.Y)
 			cpu.mem.Set(x, y, updater)
 		default:
-			updater := cpu.mem.At(cpu.X+1, cpu.Y).(mirror.BoolAtom)
+			updater := cpu.mem.At(cpu.X+1, cpu.Y).(*mirror.BoolAtom)
 			updater.Value = !updater.Value
 			cpu.mem.Set(cpu.X+1, cpu.Y, updater)
 		}
+		cpu.Next()
 		//双运算
 	case "+":
 		fallthrough

@@ -41,21 +41,25 @@ func Load(fstr string) (funcarea [][]mirror.Atom) {
 
 	return
 }
-func TestExpression_null(r *vm.Memoryspace, start mirror.PointAtom) {
-	r.Set(0, 0, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(1, 0, &mirror.NumAtom{IntValue: 10086})
-	r.Set(0, 1, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(1, 1, &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6}})
-	r.Set(6, 1, &mirror.NumAtom{IntValue: 10086})
+func TestExpression_nil(r *vm.Memoryspace, s mirror.Point) {
+	r.Set(s.X+0, s.Y+0, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
+	r.Set(s.X+1, s.Y+0, &mirror.NumAtom{IntValue: 10386})
+
+	r.Set(s.X+0, s.Y+1, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
+	r.Set(s.X+1, s.Y+1, &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6, Isoffset: false}})
+	r.Set(s.X+6, s.Y+1, &mirror.NumAtom{IntValue: 106})
+
+	r.Set(s.X+0, s.Y+2, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
+	r.Set(s.X+1, s.Y+2, &mirror.PointAtom{Point: mirror.Point{Y: 0, X: 6, Isoffset: true}})
+	r.Set(s.X+6, s.Y+2, &mirror.NumAtom{IntValue: 10})
 }
 
-//
-//func TestExpression_not(r *Memoryspace, start mirror.Atom) {
-//	r.space[start.Y][start.X] = &mirror.Atom{Type: "op", Operator: "!"}
-//	r.space[start.Y][start.X+1] = &mirror.Atom{Type: "bool", V_bool: true}
-//
-//}
-//
+func TestExpression_not(r *vm.Memoryspace, s mirror.Point) {
+	r.Set(s.X+0, s.Y+0, &mirror.OpAtom{Op: "!", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
+	r.Set(s.X+1, s.Y, &mirror.BoolAtom{Value: true})
+
+}
+
 //func TestExpression_goto(r *Memoryspace, start mirror.Atom) {
 //	r.space[start.Y][start.X] = &mirror.Atom{Type: "op", Operator: "go"}
 //	r.space[start.Y][start.X+1] = &mirror.Atom{Type: "point", Offset_y: 1, Offset_x: 3}
