@@ -116,7 +116,6 @@ func op(cpu *Runner) {
 
 	case "call": //函数调用,这里必须要知道函数体的rect
 		funcp := cpu.mem.At(cpu.X, cpu.Y+1).(*mirror.PointAtom)
-
 		funcrect := cpu.mem.At(funcp.X, funcp.Y).(*mirror.FuncAtom) //方法区的地址
 		nextrunningfuncrect := funcrect                             //新执行现场
 		funcrect.Y, funcrect.X = funcp.Y, funcp.X                   //方法区的绝对地址,一开始这个地址是不知道的

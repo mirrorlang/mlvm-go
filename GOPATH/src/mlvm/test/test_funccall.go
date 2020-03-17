@@ -2,10 +2,7 @@ package test
 
 import (
 	"github.com/beevik/etree"
-	"mirror"
-	"mlvm/vm"
 	"os"
-	"strings"
 )
 
 func Loadapp() *etree.Document {
@@ -16,55 +13,6 @@ func Loadapp() *etree.Document {
 		panic(err)
 	}
 	return doc
-}
-
-func Code(funcarea [][]mirror.Atom) (r string) {
-	for j := 0; j < len(funcarea); j++ {
-		for i := 0; i < len(funcarea[0]); i++ {
-			atom := funcarea[j][i]
-			r += atom.String() + "\t"
-		}
-		r += "\n"
-
-	}
-	return
-}
-func Load(fstr string) (funcarea [][]mirror.Atom) {
-
-	for _, line := range strings.Split(fstr, "\n") {
-		exp := make([]mirror.Atom, 0)
-		for _, _ = range strings.Split(line, "\t") {
-			//exp = append(exp, mirror.Atom{Type: "string", V_string: atom})
-		}
-		funcarea = append(funcarea, exp)
-	}
-
-	return
-}
-func TestExpression_nil(r *vm.Memoryspace, s mirror.Point) {
-	r.Set(s.X+0, s.Y+0, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(s.X+1, s.Y+0, &mirror.NumAtom{IntValue: 10386})
-
-	r.Set(s.X+0, s.Y+1, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(s.X+1, s.Y+1, &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6, Isoffset: false}})
-	r.Set(s.X+6, s.Y+1, &mirror.NumAtom{IntValue: 106})
-
-	r.Set(s.X+0, s.Y+2, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(s.X+1, s.Y+2, &mirror.PointAtom{Point: mirror.Point{Y: 0, X: 6, Isoffset: true}})
-	r.Set(s.X+6, s.Y+2, &mirror.NumAtom{IntValue: 10})
-}
-
-func TestExpression_not(r *vm.Memoryspace, s mirror.Point) {
-	r.Set(s.X+0, s.Y+0, &mirror.OpAtom{Op: "!", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(s.X+1, s.Y, &mirror.BoolAtom{Value: true})
-
-}
-
-func TestExpression_goto(r *vm.Memoryspace, s mirror.Point) {
-	r.Set(s.X, s.Y, &mirror.GotoAtom{Op: "go"})
-	r.Set(s.X+1, s.Y, &mirror.PointAtom{Point: mirror.Point{4, 4, false}})
-	r.Set(4, 5, &mirror.GotoAtom{Op: "go"})
-	r.Set(5, 5, &mirror.PointAtom{Point: mirror.Point{0, 6, false}})
 }
 
 //func TestFunc(r *Memoryspace) {

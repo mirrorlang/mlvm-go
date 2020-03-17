@@ -2,7 +2,7 @@ package monitor
 
 import (
 	"encoding/json"
-	"mlvm/test"
+
 	"mlvm/vm"
 	"net/http"
 	"strconv"
@@ -42,7 +42,7 @@ func arg(r *http.Request) (X, Y, size_X, size_Y int) {
 }
 func code(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWriter, request *http.Request) {
 	sp := memory.Rect(arg(request))
-	str := test.Code(sp)
+	str := vm.Code(sp)
 	_, err := writer.Write([]byte(str))
 	if err != nil {
 		panic(err)

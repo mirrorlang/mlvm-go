@@ -25,7 +25,7 @@ func test_not(cpu *vm.Runner) {
 		cpu.Pause()
 	}()
 	time.Sleep(time.Second)
-	test.TestExpression_not(mem, mirror.Point{X: 4, Y: 4})
+
 	//vm.TestExpression_goto(mem, mirror.PointAtom{Point: mirror.Point{X: 0, Y: 3}})
 	cpu.Goon()
 }
@@ -34,6 +34,7 @@ func test_goto(cpu *vm.Runner) {
 		cpu.Pause()
 	}()
 	time.Sleep(time.Second)
+	test.TestExpression_not(mem, mirror.Point{X: 4, Y: 4})
 	test.TestExpression_goto(mem, mirror.Point{X: 0, Y: 6})
 	cpu.Goon()
 }
@@ -56,19 +57,16 @@ func test_1(cpu *vm.Runner) {
 
 func main() {
 	var cpu0 = vm.NewRunner(mem)
-	var cpu1 = vm.NewRunner(mem)
+
 	var cpu2 = vm.NewRunner(mem)
 	cpus = append(cpus, cpu0)
-	cpus = append(cpus, cpu1)
+
 	cpus = append(cpus, cpu2)
 	cpu0.Computecycle = time.Millisecond * 3001
-	cpu1.Computecycle = time.Millisecond * 4001
-	cpu2.Computecycle = time.Millisecond * 4001
+
+	cpu2.Computecycle = time.Millisecond * 3001
 	go cpu0.Do(0, 0)
 	go test_nil(cpu0)
-
-	go cpu1.Do(4, 4)
-	go test_not(cpu1)
 
 	go cpu2.Do(0, 6)
 	go test_goto(cpu2)
