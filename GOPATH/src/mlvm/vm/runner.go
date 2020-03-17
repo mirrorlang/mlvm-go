@@ -76,20 +76,16 @@ func (cpu *Runner) Do(x, y int) {
 		}
 		if cpu.Y < cpu.mem.Y() {
 			atom := cpu.mem.At(cpu.X, cpu.Y)
-			if atom != nil {
-				switch atom.Type() {
-				case "op":
-					op(cpu)
-				case "controlflow":
-					controlflow(cpu)
-				default:
-					cpu.status = "idle"
-					continue
-				}
-			} else {
+			switch atom.Type() {
+			case "op":
+				op(cpu)
+			case "controlflow":
+				controlflow(cpu)
+			default:
 				cpu.status = "idle"
 				continue
 			}
+
 		}
 	}
 }

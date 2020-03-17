@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"github.com/gosdk/log"
 	"mirror"
 )
 
@@ -23,6 +24,7 @@ func op(cpu *Runner) {
 			cpu.mem.Set(x, y, nil)
 		default:
 			cpu.mem.Set(cpu.X+1, cpu.Y, nil)
+			log.Println(log.Red, t)
 		}
 		cpu.Next()
 	case "=":

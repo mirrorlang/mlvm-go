@@ -43,15 +43,10 @@ func Load(fstr string) (funcarea [][]mirror.Atom) {
 }
 func TestExpression_null(r *vm.Memoryspace, start mirror.PointAtom) {
 	r.Set(0, 0, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(1, 0, &mirror.NumAtom{IntValue: 10386})
-
+	r.Set(1, 0, &mirror.NumAtom{IntValue: 10086})
 	r.Set(0, 1, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(1, 1, &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6, Isoffset: false}})
-	r.Set(6, 1, &mirror.NumAtom{IntValue: 106})
-
-	r.Set(0, 2, &mirror.OpAtom{Op: "nil", Nextop: mirror.Point{X: 0, Y: 1, Isoffset: true}})
-	r.Set(1, 2, &mirror.PointAtom{Point: mirror.Point{Y: 0, X: 6, Isoffset: true}})
-	r.Set(6, 2, &mirror.NumAtom{IntValue: 10})
+	r.Set(1, 1, &mirror.PointAtom{Point: mirror.Point{Y: 1, X: 6}})
+	r.Set(6, 1, &mirror.NumAtom{IntValue: 10086})
 }
 
 //

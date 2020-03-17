@@ -64,6 +64,10 @@ function drawatom(card,mem,cpu,i,j){
             textbox.text=atom.IntValue+"";
             textbox.fill="skyblue";
             break;
+        case "bool":
+            textbox.text=atom.Value+"";
+            textbox.fill="skyblue";
+            break;
         case "string":
             textbox.text=atom.V_string+"";
             textbox.fill="green";
@@ -156,7 +160,9 @@ function drawcpu(card,cpu){
 
 }
 function draw(card,mem,cpu){
-    drawcpu(card,cpu[0]);
+    for (let i=0;i<cpu.length;i++){
+        drawcpu(card,cpu[i]);
+    }
     for (let i=0;i<mem.length;i++){
         for (let j=0;j<mem.length;j++){
             drawatom(card,mem,cpu,i,j)
