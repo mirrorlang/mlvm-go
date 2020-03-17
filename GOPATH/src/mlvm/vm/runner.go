@@ -58,8 +58,8 @@ func (cpu *Runner) Next() {
 		cpu.Y = next.Y
 	}
 }
-func (cpu *Runner) Do() {
-
+func (cpu *Runner) Do(x, y int) {
+	cpu.X, cpu.Y = x, y
 	for {
 		if cpu.Computecycle > 0 {
 			time.Sleep(cpu.Computecycle)
