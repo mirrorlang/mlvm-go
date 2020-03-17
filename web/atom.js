@@ -50,25 +50,18 @@ function drawatom(card,mem,cpu,i,j){
             textbox.fill="SlateBlue";
             break;
         case "point":
-            textbox.text="·("+atom.X;
-            if(atom.Offset_x>=0){
-                textbox.text+="+"+atom.Offset_x;
+            if(atom.Isoffset){
+                textbox.text="+"
             }else{
-                textbox.text+=""+atom.Offset_x;
+                textbox.text="·"
             }
-            textbox.text+=","+atom.Y;
-            if(atom.Offset_y>=0){
-                textbox.text+="+"+atom.Offset_y;
-            }else{
-                textbox.text+=""+atom.Offset_y;
-            }
-            textbox.text+=")"
+            textbox.text+=("("+atom.X+","+atom.Y+")")
             textbox.fill="Purple";
             textbox.fontSize=12;
 
             break;
-        case "int":
-            textbox.text=atom.V_int+"";
+        case "num":
+            textbox.text=atom.IntValue+"";
             textbox.fill="skyblue";
             break;
         case "string":
@@ -77,17 +70,17 @@ function drawatom(card,mem,cpu,i,j){
             break;
         case "op":
             
-            switch (atom.Operator){
+            switch (atom.Op){
                 case "+":
                 case "-":
                 case "*":
                 case "/":
-                    textbox.text=atom.Operator+""
+                    textbox.text=atom.Op+""
                     textbox.fontSize=20;
                     break;
                 case "go":
                     let right=mem[i][j+1]
-                    textbox.text=atom.Operator+""
+                    textbox.text=atom.Op+""
                     let goline= new fabric.Line([ j*atomsize,i*atomsize, (j+right.Offset_x)*atomsize,(i+right.Offset_y)*atomsize], {
                         strokeWidth: 1, //线宽
                         stroke:"Red", //线的颜色
@@ -127,7 +120,7 @@ function drawatom(card,mem,cpu,i,j){
                         selectable: false
                         });
                     card.add(rectnext);
-                    textbox.text=atom.Operator+"";
+                    textbox.text=atom.Op+"";
             }
            
             textbox.fill="red";

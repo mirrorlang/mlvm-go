@@ -54,7 +54,7 @@ func mem(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWrite
 		Cpu interface{}
 	}{}
 
-	sp := memory.Rect(arg(request))
+	sp := memory.Rectmap(arg(request))
 	status.Cpu = runners
 	status.Mem = sp
 	bs, err := json.Marshal(status)

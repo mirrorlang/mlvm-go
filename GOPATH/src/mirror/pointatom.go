@@ -1,6 +1,9 @@
 package mirror
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Point struct {
 	X, Y     int
@@ -26,6 +29,13 @@ func (b PointAtom) Type() string {
 func (p PointAtom) String() string {
 	return ".(" + fmt.Sprint(p.X) + "," + fmt.Sprint(p.Y) + ")"
 }
+func (b PointAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
+}
 
 type Rect struct {
 	Size_x, Size_y int
@@ -43,6 +53,13 @@ func (b RectAtom) Type() string {
 func (p RectAtom) String() string {
 	return "□[" + fmt.Sprint(p.X) + "_" + fmt.Sprint(p.Size_x) + "," + fmt.Sprint(p.Y) + "|" + fmt.Sprint(p.Size_y) + "]"
 }
+func (b RectAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
+}
 
 type RectPointAtom struct {
 	Name string
@@ -57,6 +74,13 @@ func (p RectPointAtom) String() string {
 func (b RectPointAtom) Type() string {
 	return "rectpoint"
 }
+func (b RectPointAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
+}
 
 type FuncAtom struct {
 	Name   string
@@ -69,4 +93,11 @@ func (b FuncAtom) Type() string {
 }
 func (b FuncAtom) String() string {
 	return "func " + b.Name + "()"
+}
+func (b FuncAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
 }

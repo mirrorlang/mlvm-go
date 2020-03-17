@@ -1,6 +1,9 @@
 package mirror
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type GotoAtom struct {
 	Op string //go goto
@@ -16,8 +19,16 @@ func (b GotoAtom) String() string {
 	return fmt.Sprint(b.Op)
 }
 
+func (b GotoAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
+}
+
 type IfAtom struct {
-	op   string //if,ifelse
+	Op   string //if,ifelse
 	True Point
 	Else Point
 }
@@ -30,6 +41,13 @@ func (b IfAtom) Type() string {
 }
 func (b IfAtom) String() string {
 	return "if"
+}
+func (b IfAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
 }
 
 type SwitchAtom struct {
@@ -46,4 +64,11 @@ func (b SwitchAtom) Type() string {
 }
 func (b SwitchAtom) String() string {
 	return "switch..."
+}
+func (b SwitchAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
 }

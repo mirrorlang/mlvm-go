@@ -23,7 +23,6 @@ func test_0() {
 
 	fmt.Println()
 	cpu0.Goon()
-	time.Sleep(time.Second * 5)
 
 }
 
@@ -46,7 +45,7 @@ func test_1() {
 func main() {
 	cpu0.Computecycle = time.Millisecond * 3001
 	go cpu0.Do(0, 0)
-	test_0()
+	go test_0()
 	//go test_1()
 	monitor.Run([]*vm.Runner{cpu0}, mem)
 }

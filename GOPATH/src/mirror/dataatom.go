@@ -1,6 +1,7 @@
 package mirror
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -14,6 +15,13 @@ func (b NullAtom) Type() string {
 func (b NullAtom) String() string {
 	return ""
 }
+func (b NullAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
+}
 
 type BoolAtom struct {
 	Value bool
@@ -25,6 +33,13 @@ func (b BoolAtom) Type() string {
 }
 func (b BoolAtom) String() string {
 	return fmt.Sprint(b.Value)
+}
+func (b BoolAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
 }
 
 type StringAtom struct {
@@ -38,6 +53,13 @@ func (b StringAtom) Type() string {
 func (b StringAtom) String() string {
 	return b.value
 }
+func (b StringAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
+}
 
 type NumAtom struct {
 	IntValue int
@@ -49,6 +71,13 @@ func (b NumAtom) Type() string {
 }
 func (b NumAtom) String() string {
 	return fmt.Sprint(b.IntValue)
+}
+func (b NumAtom) Tomap() (m map[string]interface{}) {
+	m = make(map[string]interface{})
+	bs, _ := json.Marshal(b)
+	json.Unmarshal(bs, &m)
+	m["Type"] = b.Type()
+	return
 }
 
 //type Atom struct {
