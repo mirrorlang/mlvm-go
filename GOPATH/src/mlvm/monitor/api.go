@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"encoding/json"
+	mem2 "mlvm/vm/mem"
 
 	"mlvm/vm"
 	"net/http"
@@ -40,7 +41,7 @@ func arg(r *http.Request) (X, Y, size_X, size_Y int) {
 	}
 	return
 }
-func code(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWriter, request *http.Request) {
+func code(runners []*vm.Runner, memory *mem2.Memoryspace, writer http.ResponseWriter, request *http.Request) {
 	sp := memory.Rect(arg(request))
 	str := vm.Code(sp)
 	_, err := writer.Write([]byte(str))
@@ -48,7 +49,7 @@ func code(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWrit
 		panic(err)
 	}
 }
-func mem(runners []*vm.Runner, memory *vm.Memoryspace, writer http.ResponseWriter, request *http.Request) {
+func mem(runners []*vm.Runner, memory *mem2.Memoryspace, writer http.ResponseWriter, request *http.Request) {
 	status := struct {
 		Mem interface{}
 		Cpu interface{}

@@ -3,6 +3,7 @@ package monitor
 import (
 	"io/ioutil"
 	"mlvm/vm"
+	mem2 "mlvm/vm/mem"
 	"net/http"
 	"os"
 	"strconv"
@@ -26,7 +27,7 @@ var Port int = 8000
 //		}
 //	}
 //}
-func Run(runners []*vm.Runner, memory *vm.Memoryspace) {
+func Run(runners []*vm.Runner, memory *mem2.Memoryspace) {
 	webpath := os.Args[1]
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		st, err := os.Stat((webpath + request.URL.Path))

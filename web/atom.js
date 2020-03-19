@@ -141,8 +141,8 @@ function drawatom(card,mem,cpu,i,j){
 }
 function drawcpu(card,cpu){
     let cpup= new fabric.Circle({
-        left:cpu.X*atomsize,
-        top:cpu.Y*atomsize,
+        left:cpu.Runfunc.Cpu_x*atomsize,
+        top:cpu.Runfunc.Cpu_y*atomsize,
         strokeWidth: 1, //线宽
         radius: atomsize/2,
         stroke:"Red", //线的颜色
@@ -152,10 +152,10 @@ function drawcpu(card,cpu){
     card.add(cpup);
 
     let cpufuncrect= new fabric.Rect( {
-        left:cpu.Funcrect.X*atomsize,
-        top: cpu.Funcrect.Y*atomsize,
-        width:atomsize*cpu.Funcrect.Size_x,
-        height:atomsize*cpu.Funcrect.Size_y,
+        left:cpu.Runfunc.Cpu_x*atomsize,
+        top:cpu.Runfunc.Cpu_y*atomsize,
+        width:atomsize*cpu.Runfunc.Funcbody.Size_x,
+        height:atomsize*cpu.Runfunc.Funcbody.Size_y,
         selectable: false,
         fill: "rgba(0,0,0,0)",
         opacity: "3",

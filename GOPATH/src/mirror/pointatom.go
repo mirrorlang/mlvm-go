@@ -5,6 +5,15 @@ import (
 	"fmt"
 )
 
+type POint interface {
+	XY() (int, int)
+	X() int
+	Y() int
+}
+type GPoint struct {
+	X, Y int
+}
+
 type Point struct {
 	X, Y     int
 	Isoffset bool
@@ -38,8 +47,8 @@ func (b PointAtom) Tomap() (m map[string]interface{}) {
 }
 
 type Rect struct {
+	Point
 	Size_x, Size_y int
-	X, Y           int
 }
 
 type RectAtom struct {
@@ -61,40 +70,21 @@ func (b RectAtom) Tomap() (m map[string]interface{}) {
 	return
 }
 
-type RectPointAtom struct {
+//联级指针
+type CascadeAtom struct {
 	Name string
 	Point
 	Inrect_offset_x, Inrect_offset_y int
 }
 
-func (p RectPointAtom) String() string {
+func (p CascadeAtom) String() string {
 	return "□(" + fmt.Sprint(p.X) + "," + fmt.Sprint(p.Y) + ").(" + fmt.Sprint(p.Inrect_offset_x) + "," + fmt.Sprint(p.Inrect_offset_y) + ")"
 }
 
-func (b RectPointAtom) Type() string {
+func (b CascadeAtom) Type() string {
 	return "rectpoint"
 }
-func (b RectPointAtom) Tomap() (m map[string]interface{}) {
-	m = make(map[string]interface{})
-	bs, _ := json.Marshal(b)
-	json.Unmarshal(bs, &m)
-	m["Type"] = b.Type()
-	return
-}
-
-type FuncAtom struct {
-	Name   string
-	Nextop Point
-	Rect
-}
-
-func (b FuncAtom) Type() string {
-	return "func"
-}
-func (b FuncAtom) String() string {
-	return "func " + b.Name + "()"
-}
-func (b FuncAtom) Tomap() (m map[string]interface{}) {
+func (b CascadeAtom) Tomap() (m map[string]interface{}) {
 	m = make(map[string]interface{})
 	bs, _ := json.Marshal(b)
 	json.Unmarshal(bs, &m)

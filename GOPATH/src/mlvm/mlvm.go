@@ -6,10 +6,11 @@ import (
 	"mlvm/monitor"
 	"mlvm/test"
 	"mlvm/vm"
+	mem2 "mlvm/vm/mem"
 	"time"
 )
 
-var mem = vm.NewMemory()
+var mem = mem2.NewMemory()
 var cpus []*vm.Runner
 
 func test_nil(cpu *vm.Runner) {
@@ -39,14 +40,14 @@ func test_goto(cpu *vm.Runner) {
 	cpu.Goon()
 }
 
-func test_1(cpu *vm.Runner) {
+func test_funccall(cpu *vm.Runner) {
 	go func() {
 		cpu.Pause()
 	}()
 	time.Sleep(time.Second)
 
-	//vm.TestFunc(mem)
-	//vm.TestCallfunc(mem)
+	test.TestFunc(mem, mirror.Point{X: 0, Y: 10})
+	test.TestCallfunc(mem, mirror.Point{X: 0, Y: 0})
 
 	cpu.Goon()
 	time.Sleep(time.Second * 2)

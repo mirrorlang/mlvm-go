@@ -2,6 +2,8 @@ package test
 
 import (
 	"github.com/beevik/etree"
+	"mirror"
+	"mlvm/vm/mem"
 	"os"
 )
 
@@ -15,40 +17,51 @@ func Loadapp() *etree.Document {
 	return doc
 }
 
-//func TestFunc(r *Memoryspace) {
-//	r.space[2][0] = &mirror.Atom{Type: "func", Size_y: 8, Size_x: 4, Name: "addrex"} //func addr
-//	r.space[4][0] = &mirror.Atom{Type: "point", Offset_y: 3, Offset_x: 2}            //first op pisition
-//
-//	r.space[5][1] = &mirror.Atom{Type: "point", Offset_y: -3, Offset_x: -1} //arg 0
-//	r.space[5][2] = &mirror.Atom{Type: "op", Operator: "+"}
-//	r.space[5][3] = &mirror.Atom{Type: "point", Offset_y: -2, Offset_x: -1} //arg 1
-//	r.space[6][2] = &mirror.Atom{Type: "op", Operator: "="}
-//	r.space[6][1] = &mirror.Atom{Type: "rectdata", Offset_x: -2, Offset_y: -1, Rectoffset_x: 0, Rectoffset_y: 0}
-//
-//	r.space[7][1] = &mirror.Atom{Type: "point", Offset_y: -5, Offset_x: -1} //arg 0
-//	r.space[7][2] = &mirror.Atom{Type: "op", Operator: "-"}
-//	r.space[7][3] = &mirror.Atom{Type: "point", Offset_y: -4, Offset_x: -1} //arg 1
-//	r.space[8][2] = &mirror.Atom{Type: "op", Operator: "="}
-//	r.space[8][1] = &mirror.Atom{Type: "rectdata", Offset_x: -2, Offset_y: -3, Rectoffset_x: 0, Rectoffset_y: 1}
-//
-//	r.space[9][2] = &mirror.Atom{Type: "op", Operator: "return"}
-//}
-//
-//// func add(a,b):return a+b,a-b
-//func TestCallfunc(r *Memoryspace) {
-//
-//	r.space[0][0] = &mirror.Atom{Type: "op", Operator: "rect"}
-//	r.space[0][1] = &mirror.Atom{Type: "rect", Y: 0, X: 0, Size_y: 15, Size_x: 5}
-//
-//	r.space[1][0] = &mirror.Atom{Type: "op", Operator: "go"} //go
-//	r.space[1][1] = &mirror.Atom{Type: "point", Offset_y: 9, Offset_x: 2}
-//
-//	r.space[10][3] = &mirror.Atom{Type: "int", V_int: 1023}
-//	r.space[11][3] = &mirror.Atom{Type: "int", V_int: 231}
-//
-//	r.space[10][2] = &mirror.Atom{Type: "op", Operator: "call"}                                  //call
-//	r.space[11][2] = &mirror.Atom{Type: "point", Y: 2, X: 0}                                     //func point
-//	r.space[12][2] = &mirror.Atom{Type: "rect", Offset_y: 0, Offset_x: 1, Size_x: 1, Size_y: 2}  //arg rect
-//	r.space[13][2] = &mirror.Atom{Type: "rect", Offset_y: 0, Offset_x: -1, Size_x: 1, Size_y: 2} //result rect
-//
-//}
+func TestFunc(r *mem.Memoryspace, s mirror.Point) {
+	r.Set(s.X, s.Y, &mirror.FuncAtom{
+		Funcbody: mirror.Rect{Size_y: 5, Size_x: 6},
+		Args:     mirror.Rect{Point: mirror.Point{X: 1, Isoffset: true}, Size_x: 2, Size_y: 1},
+		Value:    mirror.Rect{Point: mirror.Point{X: 3, Isoffset: true}, Size_x: 2, Size_y: 1},
+		Name:     "addrex",
+		Nextop:   mirror.Point{Isoffset: true, X: 4, Y: 2},
+	}) //func addr
+	r.Set(s.X+1, s.Y, &mirror.NumAtom{Name: "a"})   //func addr
+	r.Set(s.X+1, s.Y+1, &mirror.NumAtom{Name: "b"}) //func addr
+
+	r.Set(s.X+1, s.Y+2, &mirror.CascadeAtom{Inrect_offset_x: 0, Inrect_offset_y: 0, Name: "R", Point: mirror.Point{Isoffset: true, X: -1}})
+	r.Set(s.X+2, s.Y+2, &mirror.OpAtom{Op: "=", Nextop: mirror.Point{Isoffset: true, X: 2, Y: 1}})
+	r.Set(s.X+3, s.Y+2, &mirror.PointAtom{Point: mirror.Point{Isoffset: true, X: -3, Y: -2}})
+	r.Set(s.X+4, s.Y+2, &mirror.OpAtom{Op: "+", Nextop: mirror.Point{Isoffset: true, X: -2}})
+	r.Set(s.X+5, s.Y+2, &mirror.PointAtom{Point: mirror.Point{Isoffset: true, X: -3, Y: -1}})
+
+	r.Set(s.X+1, s.Y+3, &mirror.CascadeAtom{Inrect_offset_x: 0, Inrect_offset_y: 1, Name: "R", Point: mirror.Point{Isoffset: true, X: -1, Y: -1}})
+	r.Set(s.X+2, s.Y+3, &mirror.OpAtom{Op: "=", Nextop: mirror.Point{Isoffset: true, Y: 1}})
+	r.Set(s.X+3, s.Y+3, &mirror.PointAtom{Point: mirror.Point{Isoffset: true, X: -3, Y: -3}})
+	r.Set(s.X+4, s.Y+3, &mirror.OpAtom{Op: "+", Nextop: mirror.Point{Isoffset: true, X: -2}})
+	r.Set(s.X+5, s.Y+3, &mirror.PointAtom{Point: mirror.Point{Isoffset: true, X: -3, Y: -2}})
+
+	r.Set(s.X+2, s.Y+4, &mirror.OpAtom{Op: "return"})
+}
+
+func TestCallfunc(r *mem.Memoryspace, s mirror.Point) {
+
+	r.Set(s.X, s.Y, &mirror.FuncAtom{
+		Name:     "main",
+		Nextop:   mirror.Point{Isoffset: true, X: 1, Y: 3},
+		Funcbody: mirror.Rect{Point: mirror.Point{X: 0, Y: 0}, Size_y: 8, Size_x: 3},
+	})
+
+	r.Set(s.X, s.Y+1, &mirror.NumAtom{IntValue: 3})
+	r.Set(s.X+1, s.Y+1, &mirror.NumAtom{IntValue: 5})
+
+	// 第一种调用方式
+	r.Set(s.X, s.Y+2, &mirror.NumAtom{Name: "r1"})
+	r.Set(s.X+1, s.Y+2, &mirror.NumAtom{Name: "r2"})
+	//func point
+	r.Set(s.X+2, s.Y+2, &mirror.OpAtom{Op: "="})
+	r.Set(s.X+2, s.Y+2, &mirror.CallAtom{
+		Nextop: mirror.Point{Isoffset: true, X: 0, Y: 4},
+		Func:   mirror.GPoint{Y: 10, X: 0},
+		Args:   &mirror.Rect{Point: mirror.Point{X: -3, Y: -1, Isoffset: true}, Size_x: 2, Size_y: 1},
+	})
+}
