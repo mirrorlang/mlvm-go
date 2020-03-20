@@ -22,22 +22,41 @@ function drawatom(card,mem,cpu,i,j){
     if(atom!=null)
     switch(atom.Type){
         case "func":
-            textbox.text=""+atom.Name;
-            textbox.fontSize=14, // 字体大小
-            textbox.fill="Gold";
+            switch (atom.Op){
+                case "func":
+                    textbox.text=""+atom.Name;
+                    textbox.fontSize=14, // 字体大小
+                    textbox.fill="Gold";
+        
+                    let funcrect= new fabric.Rect( {
+                        left: j*atomsize,
+                        top: i*atomsize,
+                        width:atomsize*atom.Size_x,
+                        height:atomsize*atom.Size_y,
+                        selectable: false,
+                        fill: "rgba(0,0,0,0)",
+                        opacity: "1",
+                        stroke:"Gold",
+                        strokeWidth:1
+                        });
+                    card.add(funcrect);
+                    break
+                case "call":
+                    let func=mem[atom.Func.Y][atom.Func.X]
+                    textbox.text=func.Name+"("
+                    
+                    // let callnext= new fabric.Line([ j*atomsize,i*atomsize, (j+cpu[0].Funcrect.Size_x)*atomsize,(i)*atomsize], {
+                    //     strokeWidth: 1, //线宽
+                    //     stroke:"Red", //线的颜色
+                    //     selectable: false
+                    //     });
+                    // card.add(callnext);
+                    break   
+                case "return":
+                    textbox.text=atom.Op
+                    break           
+            }
 
-            let funcrect= new fabric.Rect( {
-                left: j*atomsize,
-                top: i*atomsize,
-                width:atomsize*atom.Size_x,
-                height:atomsize*atom.Size_y,
-                selectable: false,
-                fill: "rgba(0,0,0,0)",
-                opacity: "1",
-                stroke:"Gold",
-                strokeWidth:1
-                });
-            card.add(funcrect);
 
             break;
         case "rect":
@@ -111,18 +130,6 @@ function drawatom(card,mem,cpu,i,j){
                     textbox.text=atom.Op+""
                     textbox.fontSize=20;
                     break;
-                case "call":
-                    let fp=mem[i+1][j]
-                    let func=mem[fp.Y][fp.X]
-                    textbox.text=func.Name+"("
-                    
-                    let callnext= new fabric.Line([ j*atomsize,i*atomsize, (j+cpu[0].Funcrect.Size_x)*atomsize,(i)*atomsize], {
-                        strokeWidth: 1, //线宽
-                        stroke:"Red", //线的颜色
-                        selectable: false
-                        });
-                    card.add(callnext);
-                    break                  
                 default:
                     let rectnext= new fabric.Line([ j*atomsize,i*atomsize, (j)*atomsize,(i+1)*atomsize], {
                         strokeWidth: 1, //线宽
@@ -152,8 +159,8 @@ function drawcpu(card,cpu){
     card.add(cpup);
 
     let cpufuncrect= new fabric.Rect( {
-        left:cpu.Runfunc.Cpu_x*atomsize,
-        top:cpu.Runfunc.Cpu_y*atomsize,
+        left:cpu.Runfunc.Funcbody.X*atomsize,
+        top:cpu.Runfunc.Funcbody.Y*atomsize,
         width:atomsize*cpu.Runfunc.Funcbody.Size_x,
         height:atomsize*cpu.Runfunc.Funcbody.Size_y,
         selectable: false,

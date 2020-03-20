@@ -27,6 +27,7 @@ func (c *Runner) At(x, y int) mirror.Atom {
 func (c *Runner) Set(x, y int, a mirror.Atom) {
 	c.mem.Set(x, y, a)
 }
+
 func (c *Runner) InFunc(x, y int) mirror.Atom {
 	if x > c.Runfunc.Funcbody.Size_x || y > c.Runfunc.Funcbody.Size_y {
 		c.Exception()
@@ -75,6 +76,8 @@ func (c *Runner) Next() {
 		next = atom.(*mirror.OpAtom).Nextop
 	case *mirror.FuncAtom:
 		next = atom.(*mirror.FuncAtom).Nextop
+	case *mirror.CallAtom:
+		next = atom.(*mirror.CallAtom).Nextop
 	}
 	if next.Isoffset {
 		c.Runfunc.Cpu_x += next.X
@@ -118,8 +121,8 @@ func (c *Runner) Do(x, y int) {
 			switch atom.Type() {
 			case "op":
 				op(c)
-			case "call":
-				call(c)
+			case "func":
+				funcc(c)
 			case "controlflow":
 				controlflow(c)
 			default:

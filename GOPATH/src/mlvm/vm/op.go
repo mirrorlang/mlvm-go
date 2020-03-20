@@ -24,7 +24,6 @@ func op(cpu *Runner) {
 		default:
 			cpu.Set(cpu.Runfunc.Cpu_x+1, cpu.Runfunc.Cpu_y, nil)
 		}
-		cpu.Next()
 	case "=":
 		switch t := cpu.OpLeft().Type(); t {
 		case "rectpoint":
@@ -38,7 +37,6 @@ func op(cpu *Runner) {
 		default:
 			cpu.Set(cpu.Runfunc.Cpu_x-1, cpu.Runfunc.Cpu_y, cpu.result)
 		}
-		cpu.Next()
 	case "!":
 		switch t := cpu.OpLeft().Type(); t {
 		case "point":
@@ -52,7 +50,6 @@ func op(cpu *Runner) {
 			updater.Value = !updater.Value
 			cpu.Set(cpu.Runfunc.Cpu_x+1, cpu.Runfunc.Cpu_y, updater)
 		}
-		cpu.Next()
 		//双运算
 	case "+":
 		fallthrough
@@ -64,7 +61,7 @@ func op(cpu *Runner) {
 			left = cpu.OpLeft()
 		}
 		if cpu.OpRight().Type() == "point" {
-			left = cpu.At(cpu.OpRight().(*mirror.PointAtom).GlobalAddr(cpu.Runfunc.Cpu_x, cpu.Runfunc.Cpu_y))
+			right = cpu.At(cpu.OpRight().(*mirror.PointAtom).GlobalAddr(cpu.Runfunc.Cpu_x, cpu.Runfunc.Cpu_y))
 		}
 		result := 0
 		//todo 指针 运算
@@ -85,7 +82,7 @@ func op(cpu *Runner) {
 			left = cpu.OpLeft()
 		}
 		if cpu.OpRight().Type() == "point" {
-			left = cpu.At(cpu.OpRight().(*mirror.PointAtom).GlobalAddr(cpu.Runfunc.Cpu_x, cpu.Runfunc.Cpu_y))
+			right = cpu.At(cpu.OpRight().(*mirror.PointAtom).GlobalAddr(cpu.Runfunc.Cpu_x, cpu.Runfunc.Cpu_y))
 		}
 		result := 0
 
@@ -98,6 +95,6 @@ func op(cpu *Runner) {
 		cpu.result = &mirror.NumAtom{IntValue: result}
 	case "==":
 		//todo
-
 	}
+	cpu.Next()
 }

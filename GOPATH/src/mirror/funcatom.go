@@ -19,16 +19,15 @@ func (b CallAtom) Type() string {
 	return "func"
 }
 func (b CallAtom) String() string {
-	return fmt.Sprint("")
+	return "call" + fmt.Sprint(b.Func)
 }
-func (b CallAtom) Name() string {
-	return fmt.Sprint("")
-}
+
 func (b CallAtom) Tomap() (m map[string]interface{}) {
 	m = make(map[string]interface{})
 	bs, _ := json.Marshal(b)
 	json.Unmarshal(bs, &m)
 	m["Type"] = b.Type()
+	m["Op"] = "call"
 	return
 }
 
@@ -38,7 +37,6 @@ type FuncAtom struct {
 	Name         string
 	Nextop       Point
 	Cpu_x, Cpu_y int
-	Call         bool //如果发生了函数调用，进入函数后，call 为true，return后返回call原子，call为false
 	Args         Rect
 	Value        Rect
 }
@@ -54,6 +52,7 @@ func (b FuncAtom) Tomap() (m map[string]interface{}) {
 	bs, _ := json.Marshal(b)
 	json.Unmarshal(bs, &m)
 	m["Type"] = b.Type()
+	m["Op"] = "func"
 	return
 }
 
@@ -71,5 +70,6 @@ func (b ReturnAtom) Tomap() (m map[string]interface{}) {
 	bs, _ := json.Marshal(b)
 	json.Unmarshal(bs, &m)
 	m["Type"] = b.Type()
+	m["Op"] = "return"
 	return
 }
