@@ -67,7 +67,7 @@ func NewMemory() (m *Memoryspace) {
 
 func (m *Memoryspace) Resize(N int) {
 	m.n = N
-	leng := (2 << m.n)
+	leng := (2 << uint(m.n))
 	if m.space != nil {
 		m.space = append(m.space, make([][]mirror.Atom, leng-len(m.space))...)
 		for i := 0; i < leng; i++ {
