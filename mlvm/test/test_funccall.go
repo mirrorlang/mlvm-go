@@ -2,8 +2,8 @@ package test
 
 import (
 	"github.com/beevik/etree"
-	"mirror"
-	"mlvm/vm/mem"
+	"mlvm_go/mirror"
+	"mlvm_go/mlvm/vm/mem"
 	"os"
 )
 

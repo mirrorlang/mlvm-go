@@ -1,6 +1,6 @@
 package vm
 
-import "mirror"
+import "mlvm_go/mirror"
 
 func funcc(cpu *Runner) {
 

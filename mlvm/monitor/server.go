@@ -2,8 +2,8 @@ package monitor
 
 import (
 	"io/ioutil"
-	"mlvm/vm"
-	mem2 "mlvm/vm/mem"
+	"mlvm_go/mlvm/vm"
+	mem2 "mlvm_go/mlvm/vm/mem"
 	"net/http"
 	"os"
 	"strconv"

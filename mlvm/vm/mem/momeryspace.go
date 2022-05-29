@@ -2,9 +2,8 @@ package mem
 
 import (
 	"fmt"
-	"github.com/gosdk/log"
-
-	"mirror"
+	"mlvm_go/log"
+	"mlvm_go/mirror"
 	"strconv"
 )
 

@@ -1,6 +1,6 @@
 package vm
 
-import "mirror"
+import "mlvm_go/mirror"
 
 func controlflow(cpu *Runner) {
 	switch cpu.At(cpu.Runfunc.Cpu_x, cpu.Runfunc.Cpu_y).(type) {

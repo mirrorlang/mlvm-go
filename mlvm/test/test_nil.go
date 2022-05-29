@@ -1,8 +1,8 @@
 package test
 
 import (
-	"mirror"
-	"mlvm/vm/mem"
+	"mlvm_go/mirror"
+	"mlvm_go/mlvm/vm/mem"
 )
 
 func TestExpression_nil(r *mem.Memoryspace, s mirror.Point) {

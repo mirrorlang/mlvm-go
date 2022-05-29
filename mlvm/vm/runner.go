@@ -2,8 +2,8 @@ package vm
 
 import (
 	"fmt"
-	"mirror"
-	"mlvm/vm/mem"
+	"mlvm_go/mirror"
+	"mlvm_go/mlvm/vm/mem"
 	"time"
 )
 

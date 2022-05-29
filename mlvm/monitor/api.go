@@ -2,9 +2,9 @@ package monitor
 
 import (
 	"encoding/json"
-	mem2 "mlvm/vm/mem"
+	mem2 "mlvm_go/mlvm/vm/mem"
 
-	"mlvm/vm"
+	"mlvm_go/mlvm/vm"
 	"net/http"
 	"strconv"
 )

@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"mirror"
-	"mlvm/monitor"
-	"mlvm/test"
-	"mlvm/vm"
-	mem2 "mlvm/vm/mem"
+	"mlvm_go/mirror"
+	"mlvm_go/mlvm/monitor"
+	"mlvm_go/mlvm/test"
+	"mlvm_go/mlvm/vm"
+	mem2 "mlvm_go/mlvm/vm/mem"
 	"time"
 )
 
